@@ -1,16 +1,14 @@
 ---
 # Display name
-title: Alex Johnson
+title: 박지유
 
 # Name pronunciation (optional)
 name_pronunciation: ''
 
 # Full name (for SEO)
-first_name: Alex
-last_name: Johnson
+first_name: 지유
+last_name: 박
 
-# Pronouns (optional)
-pronouns: he/him
 
 # Status emoji
 status:
