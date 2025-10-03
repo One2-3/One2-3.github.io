@@ -63,6 +63,7 @@ sections:
         exclude_featured: false
     design:
       view: citation
+    active: false
   - block: collection
     id: talks
     active: false
