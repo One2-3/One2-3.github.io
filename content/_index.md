@@ -43,6 +43,7 @@ sections:
       columns: '1'
   - block: collection
     id: papers
+    active: false
     content:
       title: Featured Publications
       filters:
@@ -64,6 +65,7 @@ sections:
       view: citation
   - block: collection
     id: talks
+    active: false
     content:
       title: Recent & Upcoming Talks
       filters:
@@ -73,6 +75,7 @@ sections:
       view: card
   - block: collection
     id: news
+    active: false
     content:
       title: Recent News
       subtitle: ''
