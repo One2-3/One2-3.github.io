@@ -35,7 +35,7 @@ profiles:
     url: 'qkrwldb1695@naver.com'
     label: E-mail Me
   - icon: brands/github
-    url: https://github.com/alexjohnsonai
+    url: https://github.com/One2-3
   - icon: instgram
     url: https://instagram.com/j1_yu_u
 
