@@ -32,7 +32,7 @@ organizations:
 profiles:
   - icon: brands/github
     url: https://github.com/One2-3
-  - icon: instagram
+  - icon: brands/instagram
     url: https://instagram.com/j1_yu_u
 
 interests:
