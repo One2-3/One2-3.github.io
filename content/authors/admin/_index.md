@@ -9,10 +9,9 @@ name_pronunciation: ''
 first_name: 지유
 last_name: 박
 
-
 # Status emoji
-status:
-  icon: 🚀
+#status:
+#  icon:
 
 # Is this the primary user of the site?
 superuser: true
@@ -31,9 +30,6 @@ organizations:
 # Social network links
 # Need to use another icon? Simply download the SVG icon to your `assets/media/icons/` folder.
 profiles:
-  - icon: at-symbol
-    url: 'qkrwldb1695@naver.com'
-    label: E-mail Me
   - icon: brands/github
     url: https://github.com/One2-3
   - icon: instagram
