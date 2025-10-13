@@ -110,7 +110,7 @@ skills:
       - name: singing
         description: ''
         percent: 80
-        icon: mike
+        icon: microphone
       - name: Reading a book
         description: ''
         percent: 70
