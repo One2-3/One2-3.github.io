@@ -5,23 +5,23 @@
 
 main:
   - name: Main
-    url: /
+    url: /en/
     weight: 10
   - name: Publications
-    url: publications/
+    url: /en/publications/
     weight: 11
-  - name: Events
-    url: events/
+  - name: Talks
+    url: /en/events/
     weight: 12
-  - name: Blog
-    url: blog/
+  - name: News
+    url: /en/blog/
     weight: 13
   - name: Experience
-    url: experience/
+    url: /en/experience/
     weight: 20
   - name: Projects
-    url: projects/
+    url: /en/projects/
     weight: 30
   - name: Courses
-    url: courses/
+    url: /en/courses/
     weight: 40
