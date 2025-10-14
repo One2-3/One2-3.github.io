@@ -4,6 +4,7 @@ title: ''
 date: 2022-10-24
 type: landing
 
+
 design:
   # Default section spacing
   spacing: '6rem'
@@ -31,14 +32,10 @@ sections:
         shape: circle # Options: circle (default), square, rounded
   - block: markdown
     content:
-      title: '📚 My Research'
+      title: '소개'
       subtitle: ''
       text: |-
-        Use this area to speak to your mission. I'm a research scientist in the Moonshot team at DeepMind. I blog about machine learning, deep learning, and moonshots.
-
-        I apply a range of qualitative and quantitative methods to comprehensively investigate the role of science and technology in the economy.
-
-        Please reach out to collaborate 😃
+        전북대학교 컴퓨터인공지능학부 재학생 박지유입니다.
     design:
       columns: '1'
   - block: collection
