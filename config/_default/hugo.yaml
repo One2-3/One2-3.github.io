@@ -12,11 +12,11 @@ baseURL: 'https://one2-3.github.io/'
 ## LANGUAGE
 ############################
 
-defaultContentLanguage: ko
+defaultContentLanguage: en
 hasCJKLanguage: false
 defaultContentLanguageInSubdir: false
 removePathAccents: true
-languageCode: ko
+#languageCode: ko
 
 ############################
 ## ADVANCED
