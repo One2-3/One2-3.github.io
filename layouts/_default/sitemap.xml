@@ -1,0 +1,11 @@
+{{- /* Force valid XML sitemap for any node (home/section/lang) */ -}}
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {{- range .Site.RegularPages }}
+  <url>
+    <loc>{{ .Permalink }}</loc>
+    {{- with .Lastmod }}<lastmod>{{ .Format "2006-01-02T15:04:05-07:00" }}</lastmod>{{ end }}
+    <changefreq>weekly</changefreq>
+  </url>
+  {{- end }}
+</urlset>
