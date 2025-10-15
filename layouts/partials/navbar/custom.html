@@ -1,0 +1,101 @@
+<style>
+    /* 전구 트리거 + 드롭다운 */
+    .theme-host { position: relative; display: inline-block; }
+    .theme-trigger {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 9999px; border: 1px solid var(--hb-bd, #ddd);
+      background: var(--hb-bg, #fff); cursor: pointer;
+    }
+    .theme-trigger:hover { box-shadow: 0 0 0 3px rgba(0,128,255,.15); }
+    .theme-pop {
+      position: absolute; right: 0; top: calc(100% + 8px);
+      display: none; min-width: 180px; padding: 8px; border: 1px solid #ddd; border-radius: 10px;
+      background: var(--hb-bg, #fff); box-shadow: 0 10px 30px rgba(0,0,0,.15); z-index: 50;
+    }
+    .theme-host:hover .theme-pop { display: block; }
+    .theme-pop button {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; padding: 8px 10px; border-radius: 8px; border: 0; background: transparent; cursor: pointer;
+    }
+    .theme-pop button:hover { background: rgba(0,0,0,.06); }
+    .theme-pop .kbd { margin-left: auto; opacity:.6; font-size:.8em; }
+    html.dark .theme-trigger { background: #111; border-color: #333; }
+    html.dark .theme-pop { background: #111; border-color: #333; }
+    </style>
+    
+    <span class="theme-host" aria-haspopup="true">
+      <!-- 전구 트리거 아이콘 (Heroicons Light Bulb) -->
+      <button id="theme-trigger" class="theme-trigger" aria-label="Theme">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 3a6 6 0 0 0-3 11.2V16a1 1 0 0 0 1 1h2m2-2.8A6 6 0 1 0 12 3m0 14v2m0 2h.01"/>
+        </svg>
+      </button>
+    
+      <!-- 호버 메뉴: 라이트 / 다크 / 시스템 -->
+      <div class="theme-pop" role="menu" aria-label="Theme menu">
+        <button data-mode="light" role="menuitem">
+          ☀️ Light
+          <span class="kbd">L</span>
+        </button>
+        <button data-mode="dark" role="menuitem">
+          🌙 Dark
+          <span class="kbd">D</span>
+        </button>
+        <button data-mode="auto" role="menuitem">
+          💻 System
+          <span class="kbd">S</span>
+        </button>
+      </div>
+    </span>
+    
+    <script>
+    (() => {
+      const KEY = 'theme-pref'; // 'light' | 'dark' | 'auto'
+      const root = document.documentElement;
+      const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    
+      function apply(mode) {
+        if (mode === 'auto') {
+          root.classList.toggle('dark', mq.matches);
+          root.dataset.theme = mq.matches ? 'dark' : 'light';
+        } else if (mode === 'dark') {
+          root.classList.add('dark');
+          root.dataset.theme = 'dark';
+        } else {
+          root.classList.remove('dark');
+          root.dataset.theme = 'light';
+        }
+      }
+      function save(mode){ localStorage.setItem(KEY, mode); apply(mode); highlight(mode); }
+      function current(){ return localStorage.getItem(KEY) || 'auto'; }
+    
+      function highlight(mode){
+        document.querySelectorAll('.theme-pop button').forEach(b=>{
+          b.style.outline = ''; b.style.background = '';
+        });
+        const active = document.querySelector('.theme-pop button[data-mode="'+mode+'"]');
+        if (active) active.style.background = 'rgba(0,128,255,.12)';
+      }
+    
+      // 초기 적용
+      apply(current()); highlight(current());
+    
+      // 시스템 변경 반영
+      mq.addEventListener('change', () => { if (current()==='auto') apply('auto'); });
+    
+      // 메뉴 클릭
+      document.querySelectorAll('.theme-pop button[data-mode]').forEach(btn=>{
+        btn.addEventListener('click', () => save(btn.dataset.mode));
+      });
+    
+      // 키보드 단축키 (선택): L/D/S
+      window.addEventListener('keydown', (e)=>{
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable)) return;
+        if (e.key.toLowerCase() === 'l') save('light');
+        if (e.key.toLowerCase() === 'd') save('dark');
+        if (e.key.toLowerCase() === 's') save('auto');
+      });
+    })();
+    </script>
+    

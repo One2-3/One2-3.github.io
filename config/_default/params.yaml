@@ -32,7 +32,7 @@ header:
     block: 'navbar'
     fixed_to_top: true
     show_search: true
-    show_theme_chooser: true
+    show_theme_chooser: false
     show_translations: true
     logo:
       text: '박지유'
