@@ -4,7 +4,6 @@ title: ''
 date: 2022-10-24
 type: landing
 
-
 design:
   # Default section spacing
   spacing: '6rem'
@@ -39,27 +38,15 @@ sections:
     design:
       columns: '1'
   - block: collection
-    id: papers
-    active: false
     content:
-      title: Featured Publications
-      filters:
-        folders:
-          - publications
-        featured_only: true
-    design:
-      view: article-grid
-      columns: 2
-  - block: collection
-    content:
-      title: Recent Publications
+      title: Publications
       text: ''
       filters:
         folders:
           - publications
         exclude_featured: false
     design:
-      view: citation
+      view: badge-card
     active: false
   - block: collection
     id: talks
@@ -97,7 +84,7 @@ sections:
       order: desc
     design:
       # Choose a layout view
-      view: card
+      view: mini-card
       # Reduce spacing
       spacing:
         padding: [0, 0, 0, 0]

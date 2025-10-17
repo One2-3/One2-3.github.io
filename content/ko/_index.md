@@ -38,20 +38,8 @@ sections:
     design:
       columns: '1'
   - block: collection
-    id: papers
-    active: false
     content:
-      title: Featured Publications
-      filters:
-        folders:
-          - publications
-        featured_only: true
-    design:
-      view: badge-card
-      columns: 2
-  - block: collection
-    content:
-      title: Recent Publications
+      title: Publications
       text: ''
       filters:
         folders:
