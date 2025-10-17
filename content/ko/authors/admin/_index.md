@@ -35,8 +35,6 @@ profiles:
   - icon: brands/instagram
     url: https://instagram.com/j1_yu_u
 
-headings: summary:""
-
 interests:
   - 프론트엔드
   - 백엔드
@@ -150,8 +148,3 @@ awards:
     summary: |
       Recognized for contributions to scaling laws in deep learning.
 ---
-
-- 나이 : 22세(04년)
-- 성별 : 여
-- 전화번호 : 010-5809-8035
-- 메일 : qkrwldb1695@naver.com
