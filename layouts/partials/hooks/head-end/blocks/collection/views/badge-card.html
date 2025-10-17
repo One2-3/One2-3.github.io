@@ -1,18 +1,29 @@
-{{/* 태그 배지 + 요약 카드 */}}
+{{/* badge-card: 태그/요약이 없어도 차별화되도록 기본값 표시 */}}
 <a
   class="block rounded-2xl p-5 border bg-white/80 dark:bg-zinc-900/60 hover:shadow transition"
   href="{{ .RelPermalink }}"
 >
   <div class="flex gap-2 mb-2">
-    {{ range first 3 .Params.tags }}
+    {{ $tags := .Params.tags }} {{ if $tags }} {{ range first 3 $tags }}
     <span
       class="text-xs px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/30"
       >{{ . }}</span
     >
+    {{ end }} {{ else }}
+    <span
+      class="text-xs px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/30"
+    >
+      {{ or .Type "Update" }}
+    </span>
     {{ end }}
   </div>
+
   <div class="text-xl font-bold mb-1">{{ .Title }}</div>
-  <p class="opacity-75 line-clamp-2">
-    {{ with .Summary }}{{ . | plainify }}{{ end }}
-  </p>
+
+  {{ $excerpt := or .Summary .Params.abstract .Params.description }} {{ if
+  $excerpt }}
+  <p class="opacity-75 line-clamp-2">{{ $excerpt | plainify }}</p>
+  {{ else }}
+  <p class="opacity-60">더보기에서 자세히 보기 →</p>
+  {{ end }}
 </a>
