@@ -149,4 +149,7 @@ awards:
       Recognized for contributions to scaling laws in deep learning.
 ---
 
-test
+- 나이 : 22세(04년)
+- 성별 : 여
+- 전화번호 : 010-5809-8035
+- 메일 : qkrwldb1695@naver.com
