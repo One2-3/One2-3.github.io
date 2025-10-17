@@ -14,36 +14,69 @@ sections:
     content:
       title: ''
       text: |-
-        <div class="carousel">
-          <div class="carousel-inner">
-            <div class="carousel-item fullscreen active" style="height:33vh;background:#000;background-image:url(/media/slider1.jpg);background-position:50%;background-size:cover;background-repeat:no-repeat">
-              <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center">
-                <div class="wg-hero dark container" style="margin-left:6rem;margin-right:6rem;text-align:center">
-                  <h1 class="hero-title">About J1YU</h1>
-                  <p class="hero-lead" style="margin:0 auto">탐독을 즐기는</p>
-                </div>
-              </div>
-            </div>
+        <style>
+          /* Alpine FOUC 방지 */
+          [x-cloak]{display:none}
 
-            <div class="carousel-item fullscreen" style="height:33vh;background:#111;background-image:url(/media/slider2.jpg);background-position:50%;background-size:cover;background-repeat:no-repeat">
-              <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center">
-                <div class="wg-hero dark container" style="margin-left:6rem;margin-right:6rem;text-align:center">
-                  <h1 class="hero-title">Project</h1>
-                  <p class="hero-lead" style="margin:0 auto">수행한 프로젝트에 대한 소개</p>
-                </div>
-              </div>
-            </div>
+          /* 화살표 버튼 (원 안 X, 반투명, 큼직하게) */
+          .hero-arrow{
+            position:absolute; top:50%;
+            transform:translateY(-50%);
+            font-size:3rem; line-height:1;
+            color:rgba(255,255,255,.7);
+            text-shadow:0 2px 8px rgba(0,0,0,.45);
+            padding:.25rem .5rem;
+            transition:opacity .2s ease, color .2s ease, transform .2s ease;
+            user-select:none;
+          }
+          .hero-arrow:hover{ color:#fff; transform:translateY(-50%) scale(1.06); }
+          .hero-arrow--left{ left:.75rem }
+          .hero-arrow--right{ right:.75rem }
 
-            <div class="carousel-item fullscreen" style="height:33vh;background:#000;background-image:url(/media/slider3.jpg);background-position:50%;background-size:cover;background-repeat:no-repeat">
-              <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center">
-                <div class="wg-hero dark container" style="margin-left:6rem;margin-right:6rem;text-align:center">
-                  <h1 class="hero-title">Hobby</h1>
-                  <p class="hero-lead" style="margin:0 auto">음악, 독서, 산책</p>
-                </div>
-              </div>
+          /* 밑줄형 인디케이터 (___) */
+          .hero-dots{ position:absolute; left:0; right:0; bottom:.75rem; display:flex; gap:.5rem; justify-content:center; z-index:10 }
+          .hero-dot{
+            height:3px; width:28px; opacity:.6; background:#fff;
+            transition:all .25s ease;
+          }
+          .hero-dot--active{ width:44px; opacity:1 }
+        </style>
+
+        <div
+          x-data="{
+            slides: ['/media/slider1.jpg','/media/slider2.jpg','/media/slider3.jpg'],
+            i: 0,
+            t: null,
+            start(){ this.stop(); this.t = setInterval(()=>{ this.i=(this.i+1)%this.slides.length }, 4000) },
+            stop(){ if(this.t) clearInterval(this.t) },
+            goto(n){ this.i=(n+this.slides.length)%this.slides.length; this.start() }
+          }"
+          x-init="start()"
+          @mouseenter="stop()" @mouseleave="start()"
+          class="relative w-full h-[33vh] overflow-hidden"
+          x-cloak
+        >
+          <!-- 배경 슬라이드 (영역을 꽉 채움) -->
+          <template x-for="(src, idx) in slides" :key="idx">
+            <div
+              class="absolute inset-0 bg-center bg-cover transition-opacity duration-700"
+              :class="i===idx ? 'opacity-100' : 'opacity-0'"
+              :style="`background-image:url(${src})`">
             </div>
+          </template>
+
+          <!-- 좌/우 화살표 -->
+          <button class="hero-arrow hero-arrow--left" @click="goto(i-1)" aria-label="Previous">&lsaquo;</button>
+          <button class="hero-arrow hero-arrow--right" @click="goto(i+1)" aria-label="Next">&rsaquo;</button>
+
+          <!-- 밑줄형 인디케이터 -->
+          <div class="hero-dots">
+            <template x-for="(src, idx) in slides" :key="'dot'+idx">
+              <div @click="goto(idx)" class="hero-dot" :class="i===idx ? 'hero-dot--active' : ''"></div>
+            </template>
           </div>
         </div>
+
     design:
       columns: '1'
       spacing:
