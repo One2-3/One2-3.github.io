@@ -58,7 +58,7 @@ sections:
           - publications
         exclude_featured: false
     design:
-      view: citation
+      view: badge-card
     active: false
   - block: collection
     id: talks
