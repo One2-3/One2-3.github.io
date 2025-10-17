@@ -16,3 +16,16 @@
 .blox-resume-biography-3 .flex.items-center.gap-4.mb-8 {
   margin-bottom: 0 !important;
 }
+
+/* EN/KO 공통: bio 블록에서 H2(Professional Summary) 있는 헤더 줄 통째로 숨김 */
+.blox-resume-biography-3 .flex.items-center.gap-4.mb-8:has(> h2) {
+  display: none !important;
+}
+
+/* :has() 미지원 브라우저용 폴백 — h2만 숨기고 여백 최소화 */
+.blox-resume-biography-3 .flex.items-center.gap-4.mb-8 > h2 {
+  display: none !important;
+}
+.blox-resume-biography-3 .flex.items-center.gap-4.mb-8 {
+  margin-bottom: 0 !important;
+}
