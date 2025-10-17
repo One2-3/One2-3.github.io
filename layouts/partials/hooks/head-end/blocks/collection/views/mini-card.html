@@ -1,0 +1,17 @@
+{{/* 작은 썸네일 + 제목 + 날짜 */}}
+<a
+  class="group block rounded-xl p-4 border hover:shadow transition"
+  href="{{ .RelPermalink }}"
+>
+  {{ with .Resources.GetMatch "featured*" }}
+  <img
+    class="w-full aspect-[16/9] object-cover rounded-lg mb-3"
+    src="{{ .RelPermalink }}"
+    alt=""
+  />
+  {{ end }}
+  <div class="text-sm opacity-70">{{ .Date | time.Format "2006-01-02" }}</div>
+  <div class="font-semibold text-lg group-hover:text-primary-600">
+    {{ .Title }}
+  </div>
+</a>

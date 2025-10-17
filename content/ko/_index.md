@@ -4,7 +4,6 @@ title: ''
 date: 2022-10-24
 type: landing
 
-
 design:
   # Default section spacing
   spacing: '6rem'
@@ -48,7 +47,7 @@ sections:
           - publications
         featured_only: true
     design:
-      view: article-grid
+      view: badge-card
       columns: 2
   - block: collection
     content:
@@ -97,7 +96,7 @@ sections:
       order: desc
     design:
       # Choose a layout view
-      view: card
+      view: mini-card
       # Reduce spacing
       spacing:
         padding: [0, 0, 0, 0]

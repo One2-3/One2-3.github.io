@@ -1,0 +1,18 @@
+{{/* 태그 배지 + 요약 카드 */}}
+<a
+  class="block rounded-2xl p-5 border bg-white/80 dark:bg-zinc-900/60 hover:shadow transition"
+  href="{{ .RelPermalink }}"
+>
+  <div class="flex gap-2 mb-2">
+    {{ range first 3 .Params.tags }}
+    <span
+      class="text-xs px-2 py-0.5 rounded-full bg-primary-100 dark:bg-primary-900/30"
+      >{{ . }}</span
+    >
+    {{ end }}
+  </div>
+  <div class="text-xl font-bold mb-1">{{ .Title }}</div>
+  <p class="opacity-75 line-clamp-2">
+    {{ with .Summary }}{{ . | plainify }}{{ end }}
+  </p>
+</a>
