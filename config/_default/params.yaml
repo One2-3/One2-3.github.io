@@ -5,6 +5,8 @@
 
 # Appearance
 appearance:
+  custom_css:
+    - css/custom.css
   mode: system
   color: indigo
 

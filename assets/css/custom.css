@@ -1,0 +1,4 @@
+/* bio 블록의 자동 제목(Professional Summary) 숨기기 */
+.blox-resume-biography-3 .resume-biography .prose h2 {
+  display: none !important;
+}
