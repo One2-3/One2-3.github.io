@@ -14,11 +14,14 @@ sections:
     content:
       title: ''
       text: |-
+        <!-- AlpineJS (슬라이더 로직 실행용) -->
+        <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
         <style>
-          /* Alpine FOUC 방지 */
+          /* Alpine 초기 깜빡임 방지 */
           [x-cloak]{display:none}
 
-          /* 화살표 버튼 (원 안 X, 반투명, 큼직하게) */
+          /* 화살표 버튼: 원형 아님, 반투명 < >  */
           .hero-arrow{
             position:absolute; top:50%;
             transform:translateY(-50%);
@@ -28,12 +31,13 @@ sections:
             padding:.25rem .5rem;
             transition:opacity .2s ease, color .2s ease, transform .2s ease;
             user-select:none;
+            z-index:10;
           }
           .hero-arrow:hover{ color:#fff; transform:translateY(-50%) scale(1.06); }
           .hero-arrow--left{ left:.75rem }
           .hero-arrow--right{ right:.75rem }
 
-          /* 밑줄형 인디케이터 (___) */
+          /* 밑줄형 인디케이터 ___ */
           .hero-dots{ position:absolute; left:0; right:0; bottom:.75rem; display:flex; gap:.5rem; justify-content:center; z-index:10 }
           .hero-dot{
             height:3px; width:28px; opacity:.6; background:#fff;
@@ -56,7 +60,7 @@ sections:
           class="relative w-full h-[33vh] overflow-hidden"
           x-cloak
         >
-          <!-- 배경 슬라이드 (영역을 꽉 채움) -->
+          <!-- 배경 슬라이드: 영역을 꽉 채움 -->
           <template x-for="(src, idx) in slides" :key="idx">
             <div
               class="absolute inset-0 bg-center bg-cover transition-opacity duration-700"
@@ -65,7 +69,7 @@ sections:
             </div>
           </template>
 
-          <!-- 좌/우 화살표 -->
+          <!-- 좌/우 네비게이션 -->
           <button class="hero-arrow hero-arrow--left" @click="goto(i-1)" aria-label="Previous">&lsaquo;</button>
           <button class="hero-arrow hero-arrow--right" @click="goto(i+1)" aria-label="Next">&rsaquo;</button>
 
