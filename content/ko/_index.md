@@ -16,7 +16,7 @@ sections:
       text: |-
         <div class="carousel">
           <div class="carousel-inner">
-            <div class="carousel-item fullscreen active" style="height:100vh;background:#000;background-image:url(/media/slider1.jpg);background-position:50%;background-size:cover;background-repeat:no-repeat">
+            <div class="carousel-item fullscreen active" style="height:33vh;background:#000;background-image:url(/media/slider1.jpg);background-position:50%;background-size:cover;background-repeat:no-repeat">
               <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center">
                 <div class="wg-hero dark container" style="margin-left:6rem;margin-right:6rem;text-align:center">
                   <h1 class="hero-title">About J1YU</h1>
@@ -25,7 +25,7 @@ sections:
               </div>
             </div>
 
-            <div class="carousel-item fullscreen" style="height:100vh;background:#111;background-image:url(/media/slider2.jpg);background-position:50%;background-size:cover;background-repeat:no-repeat">
+            <div class="carousel-item fullscreen" style="height:33vh;background:#111;background-image:url(/media/slider2.jpg);background-position:50%;background-size:cover;background-repeat:no-repeat">
               <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center">
                 <div class="wg-hero dark container" style="margin-left:6rem;margin-right:6rem;text-align:center">
                   <h1 class="hero-title">Project</h1>
@@ -34,7 +34,7 @@ sections:
               </div>
             </div>
 
-            <div class="carousel-item fullscreen" style="height:100vh;background:#000;background-image:url(/media/slider3.jpg);background-position:50%;background-size:cover;background-repeat:no-repeat">
+            <div class="carousel-item fullscreen" style="height:33vh;background:#000;background-image:url(/media/slider3.jpg);background-position:50%;background-size:cover;background-repeat:no-repeat">
               <div class="position-absolute d-flex w-100 h-100 justify-content-center align-items-center">
                 <div class="wg-hero dark container" style="margin-left:6rem;margin-right:6rem;text-align:center">
                   <h1 class="hero-title">Hobby</h1>
@@ -46,6 +46,7 @@ sections:
         </div>
     design:
       columns: '1'
+      spacing: '0rem'
 
   - block: resume-biography-3
     content:
