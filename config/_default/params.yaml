@@ -7,6 +7,8 @@
 appearance:
   custom_css:
     - css/custom.css
+  custom_js:
+    - js/custom.js
   mode: system
   color: indigo
 
