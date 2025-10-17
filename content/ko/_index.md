@@ -46,7 +46,8 @@ sections:
         </div>
     design:
       columns: '1'
-      spacing: '0rem'
+      spacing:
+        padding: ['0', '0', '0', '0']
 
   - block: resume-biography-3
     content:
