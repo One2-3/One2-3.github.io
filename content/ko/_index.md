@@ -14,12 +14,10 @@ sections:
       # Choose a user profile to display (a folder name within `content/authors/`)
       username: admin
       text: |-
-      - 나이 : 22세(04년)
-      - 성별 : 여
-      - 전화번호 : 010-5809-8035
-      - 메일 : qkrwldb1695@naver.com
-      headings:
-        summary: ""
+        - 나이 : 22세(04년)
+        - 성별 : 여
+        - 전화번호 : 010-5809-8035
+        - 메일 : qkrwldb1695@naver.com
       # Show a call-to-action button under your biography? (optional)
       button:
         text: 이력서 다운로드
@@ -28,6 +26,7 @@ sections:
         about: ''
         education: ''
         interests: ''
+        summary: ''
     design:
       # Apply a gradient background
       css_class: hbx-bg-gradient
