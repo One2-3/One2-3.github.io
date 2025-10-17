@@ -149,5 +149,3 @@ awards:
     summary: |
       Recognized for contributions to scaling laws in deep learning.
 ---
-
-test
