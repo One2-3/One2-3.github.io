@@ -29,3 +29,24 @@
 .blox-resume-biography-3 .flex.items-center.gap-4.mb-8 {
   margin-bottom: 0 !important;
 }
+
+/* 버튼 마우스 호버 색상 변경 */
+
+/* 데모 테마의 색 변수(예: --primary-700, --secondary-700)를 그대로 사용 */
+.blox-resume-biography-3 a[href$='uploads/resume.pdf'] {
+  transition: background-color 0.2s ease, background-image 0.2s ease,
+    box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+/* 라이트 모드: hover 시 테마 변수로 색 변경 */
+.blox-resume-biography-3 a[href$='uploads/resume.pdf']:hover {
+  background-image: none !important;
+  background-color: var(--primary-700) !important; /* ← 테마 CSS 변수 사용 */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-2px);
+}
+
+/* 다크 모드: 살짝 더 밝게 (역시 테마 변수) */
+html.dark .blox-resume-biography-3 a[href$='uploads/resume.pdf']:hover {
+  background-color: var(--primary-600) !important;
+}
