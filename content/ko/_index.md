@@ -13,11 +13,13 @@ sections:
     content:
       # Choose a user profile to display (a folder name within `content/authors/`)
       username: admin
-      text: '
+      text: |-
       - 나이 : 22세(04년)
       - 성별 : 여
       - 전화번호 : 010-5809-8035
-      - 메일 : qkrwldb1695@naver.com'
+      - 메일 : qkrwldb1695@naver.com
+      headings:
+        summary: ""
       # Show a call-to-action button under your biography? (optional)
       button:
         text: 이력서 다운로드
