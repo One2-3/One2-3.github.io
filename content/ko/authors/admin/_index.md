@@ -35,6 +35,8 @@ profiles:
   - icon: brands/instagram
     url: https://instagram.com/j1_yu_u
 
+headings: summary:""
+
 interests:
   - 프론트엔드
   - 백엔드
