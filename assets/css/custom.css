@@ -2,3 +2,17 @@
 .blox-resume-biography-3 .resume-biography .prose h2 {
   display: none !important;
 }
+
+.blox-resume-biography-3 h2:empty {
+  display: none !important;
+}
+
+/* 2) (가능하면) 제목 컨테이너도 같이 감추기 - :has 지원 브라우저용 */
+.blox-resume-biography-3 .flex.items-center.gap-4.mb-8:has(h2:empty) {
+  display: none !important;
+}
+
+/* 3) 혹시 남는 여백 제거 */
+.blox-resume-biography-3 .flex.items-center.gap-4.mb-8 {
+  margin-bottom: 0 !important;
+}
