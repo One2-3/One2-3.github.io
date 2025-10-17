@@ -17,7 +17,7 @@ sections:
       # Show a call-to-action button under your biography? (optional)
       button:
         text: 이력서 다운로드
-        url: uploads/resume.pdf
+        url: '/uploads/resume.pdf'
       headings:
         about: ''
         education: ''
