@@ -48,7 +48,11 @@ sections:
 
         <div
           x-data="{
-            slides: ['/media/slider1.jpg','/media/slider2.jpg','/media/slider3.jpg'],
+             slides: [
+              { src: '/media/slider1.jpg', title: 'About J1YU', desc: '탐독을 즐기는' },
+              { src: '/media/slider2.jpg', title: 'Project',   desc: '수행한 프로젝트에 대한 소개' },
+              { src: '/media/slider2.jpg', title: 'Hobby',     desc: '음악, 독서, 산책' }
+            ],
             i: 0,
             t: null,
             start(){ this.stop(); this.t = setInterval(()=>{ this.i=(this.i+1)%this.slides.length }, 4000) },
