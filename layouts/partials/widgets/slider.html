@@ -1,4 +1,4 @@
-{{- /* layouts/partials/widgets/slider.html  */ -}}
+{{- /* layouts/partials/widgets/slider.html  — absolute stacking + fade, no scroll */ -}}
 {{- $p := .widget -}}
 {{- $params := $p.Params -}}
 {{- $content := (index $params "content" | default dict) -}}
@@ -17,18 +17,24 @@
     <div class="text-red-600 py-12">슬라이드가 없습니다 ({{ $p.Path }})</div>
   {{- else -}}
     <style>
+      /* 공통 스타일 */
       .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
       .no-scrollbar::-webkit-scrollbar{ display:none; }
+      /* 스테이지 & 슬라이드(절대 배치, 페이드 전환) */
+      .hb-stage{ position:relative; overflow:hidden; }
+      .hb-slide{ position:absolute; inset:0; opacity:0; transition:opacity .4s ease; pointer-events:none; }
+      .hb-slide.is-active{ opacity:1; pointer-events:auto; }
+      /* 인디케이터 바(언더스코어) */
       .hb-dot{ width:24px; height:2px; border-radius:9999px; background:rgba(255,255,255,.35); opacity:.45; transition:opacity .2s ease; }
       .hb-dot.is-active{ opacity:.95; background:rgba(255,255,255,.95); }
+      /* 좌우 화살표 — 원/배경 없음, 텍스트만 */
       .hb-arrow{ font-size:28px; line-height:1; padding:6px 10px; color:#fff; opacity:.65; }
       .hb-arrow:hover{ opacity:1; }
       .hb-arrow:focus{ outline:none; }
     </style>
 
     <div id="{{ $cid }}" data-autoplay="{{ $autoplay }}"
-         class="relative no-scrollbar w-full overflow-x-auto flex items-stretch snap-x snap-mandatory {{ $minh }}"
-         tabindex="0" aria-roledescription="carousel">
+         class="hb-stage no-scrollbar w-full {{ $minh }}" tabindex="0" aria-roledescription="carousel">
 
       {{- range $s := $slides -}}
         {{- $bg := (index $s "background" | default dict) -}}
@@ -36,8 +42,7 @@
         {{- $img := (index $imgObj "filename" | default "") -}}
         {{- $url := cond (hasPrefix $img "/") $img (printf "/%s" $img) -}}
 
-        <!-- 폭 고정: shrink-0 + min-w-full (가로 계산을 scrollLeft/width로 일치시킴) -->
-        <div class="hb-slide shrink-0 min-w-full snap-start relative" aria-hidden="true">
+        <div class="hb-slide {{ $minh }}" aria-hidden="true">
           {{- if $img -}}
             <div class="absolute inset-0 z-0 bg-center bg-cover {{ $minh }}"
                  style='background-image:url("{{ $url | relURL }}")'></div>
@@ -74,38 +79,14 @@
       var delay = parseInt(delayAttr, 10);
       if (isNaN(delay) || delay <= 0) delay = 5000;
 
+      var i = 0;
       var timer = null;
+      var slides = Array.prototype.slice.call(c.querySelectorAll('.hb-slide'));
       var dotsWrap = c.querySelector('.hb-dots');
       var btnPrev = c.querySelector('.hb-prev');
       var btnNext = c.querySelector('.hb-next');
 
-      function slides(){ return c.querySelectorAll('.hb-slide'); }
-      function count(){ return slides().length; }
-      function width(){ return c.clientWidth; }
-
-      // 스크롤 위치 ↔ 인덱스 변환 (핵심)
-      function currentIndex(){
-        var w = Math.max(1, width());
-        var idx = Math.round(c.scrollLeft / w);
-        var n = count();
-        if (idx < 0) idx = 0;
-        if (idx > n - 1) idx = n - 1;
-        return idx;
-      }
-
-      function scrollToIndex(idx, behavior){
-        var n = count(); if (!n) return;
-        if (idx < 0) idx = 0;
-        if (idx > n - 1) idx = n - 1;
-        c.scrollTo({ left: idx * width(), behavior: behavior || 'smooth' });
-        paint(idx);
-      }
-
-      function step(){
-        scrollToIndex(currentIndex() + 1, 'smooth');
-      }
-      function start(){ if (!timer) timer = setInterval(step, delay); }
-      function stop(){ if (timer){ clearInterval(timer); timer = null; } }
+      function count(){ return slides.length; }
 
       function makeDots(){
         var n = count();
@@ -116,61 +97,51 @@
           b.className = 'hb-dot';
           (function(idx){
             b.addEventListener('click', function(){
-              stop();
-              scrollToIndex(idx, 'smooth');
-              start();
+              stop(); goTo(idx); start();
             });
           })(k);
           dotsWrap.appendChild(b);
         }
       }
 
-      function paint(activeIdx){
-        var idx = (typeof activeIdx === 'number') ? activeIdx : currentIndex();
-        // dots
+      function paint(){
+        var n = count();
+        if (!n) return;
         var dots = dotsWrap.querySelectorAll('.hb-dot');
-        if (dots.length !== count()) { makeDots(); dots = dotsWrap.querySelectorAll('.hb-dot'); }
-        for (var k=0; k<dots.length; k++){
-          dots[k].classList.toggle('is-active', k === idx);
+        if (dots.length !== n){ makeDots(); dots = dotsWrap.querySelectorAll('.hb-dot'); }
+        for (var k=0; k<n; k++){
+          slides[k].classList.toggle('is-active', k === i);
+          slides[k].setAttribute('aria-hidden', k === i ? 'false' : 'true');
+          dots[k].classList.toggle('is-active', k === i);
         }
-        // aria
-        slides().forEach(function(el, i){
-          el.setAttribute('aria-hidden', i === idx ? 'false' : 'true');
-        });
       }
 
-      // 스크롤 시 실시간 동기화 (고정 느낌 제거)
-      var scrollTicking = false;
-      c.addEventListener('scroll', function(){
-        if (!scrollTicking){
-          scrollTicking = true;
-          requestAnimationFrame(function(){
-            paint();
-            scrollTicking = false;
-          });
-        }
-      }, { passive:true });
+      function goTo(idx){
+        var n = count(); if (!n) return;
+        i = (idx + n) % n;
+        paint();
+      }
+
+      function step(){ goTo(i + 1); }
+      function start(){ if (!timer) timer = setInterval(step, delay); }
+      function stop(){ if (timer){ clearInterval(timer); timer = null; } }
 
       // 버튼/호버/터치/키보드
-      btnPrev.addEventListener('click', function(){ stop(); scrollToIndex(currentIndex()-1, 'smooth'); start(); });
-      btnNext.addEventListener('click', function(){ stop(); scrollToIndex(currentIndex()+1, 'smooth'); start(); });
+      btnPrev.addEventListener('click', function(){ stop(); goTo(i-1); start(); });
+      btnNext.addEventListener('click', function(){ stop(); goTo(i+1); start(); });
       c.addEventListener('mouseenter', stop);
       c.addEventListener('mouseleave', start);
       c.addEventListener('touchstart', stop, { passive:true });
       c.addEventListener('touchend', start, { passive:true });
       c.addEventListener('keydown', function(e){
-        if (e.key === 'ArrowLeft'){ stop(); scrollToIndex(currentIndex()-1, 'smooth'); start(); }
-        else if (e.key === 'ArrowRight'){ stop(); scrollToIndex(currentIndex()+1, 'smooth'); start(); }
+        if (e.key === 'ArrowLeft'){ stop(); goTo(i-1); start(); }
+        else if (e.key === 'ArrowRight'){ stop(); goTo(i+1); start(); }
       });
 
-      // 리사이즈 시 현재 인덱스 위치 재정렬
-      window.addEventListener('resize', function(){
-        scrollToIndex(currentIndex(), 'auto');
-      });
-
+      // 초기화
       makeDots();
-      paint(0);     // 초기 인디케이터
-      start();      // 자동 넘김 시작
+      paint();
+      start();
     });
     </script>
   {{- end -}}
