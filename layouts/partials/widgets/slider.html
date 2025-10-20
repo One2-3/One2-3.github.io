@@ -12,7 +12,7 @@
 {{- $idHash := md5 $p.Path -}}
 {{- $cid := printf "hb-slider-%s" $idHash -}}
 
-<section id="{{ $id }}" class="w-full">
+<section id="{{ $id }}" class="w-full m-0 p-0">
   {{- if lt (len $slides) 1 -}}
     <div class="text-red-600 py-12">슬라이드가 없습니다 ({{ $p.Path }})</div>
   {{- else -}}
@@ -39,10 +39,22 @@
       }
       .hb-text a { text-decoration: underline; }
       .hb-text a:hover { text-decoration: none; }
+
+      /* 화면 좌우로 완전 풀블리드(상단도 붙음), 아래쪽은 기존 높이 유지 */
+      .hb-fullbleed {
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+        width: 100vw;           /* 좌/우 화면에 딱 붙게 */
+      }
+
     </style>
 
-    <div id="{{ $cid }}" data-autoplay="{{ $autoplay }}"
-         class="hb-stage no-scrollbar w-full {{ $minh }}" tabindex="0" aria-roledescription="carousel">
+      <div id="{{ $cid }}" data-autoplay="{{ $autoplay }}"
+        class="hb-stage no-scrollbar hb-fullbleed {{ $minh }}" tabindex="0" aria-roledescription="carousel">
+
 
       {{- range $s := $slides -}}
         {{- $bg := (index $s "background" | default dict) -}}
