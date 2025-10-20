@@ -8,14 +8,30 @@ appearance:
   mode: light
   color: indigo
 
+# --- SEO basics ---
+#description: "박지유 포트폴리오 — 프로젝트와 도전을 통해 성장하는 과정을 기록합니다."
+#author: "박지유"
+# 다국어 사이트면 기본 언어 코드
+#locale: ko_KR
+
+# 조직/사이트 정보 (구조화 데이터에서 사용)
+#org_name: "박지유"
+#org_url: "https://one2-3.github.io"
+#org_logo: "/media/icon.png"     # 정사각 512x512 권장 (static에 파일 존재)
+#social:
+#  - icon: github
+#    link: "https://github.com/one2-3"
+#  - icon: instagram
+#    link: "https://www.instagram.com/j1_yu_u"
+
 # SEO
 marketing:
   seo:
     site_type: Person
     local_business_type: ''
-    org_name: ''
-    description: 'A highly-customizable Hugo landing page theme powered by Hugo Blox website builder.'
-    twitter: 'GetResearchDev'
+    org_name: '박지유'
+    org_url: 'https://one2-3.github.io'
+    description: '박지유 포트폴리오'
   analytics:
     google_analytics: ''
     baidu_tongji: ''
