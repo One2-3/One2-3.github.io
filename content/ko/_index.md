@@ -8,6 +8,12 @@ design:
   spacing: '6rem'
 
 sections:
+    - block: markdown
+      content:
+        title: "테스트 섹션"
+        text: |
+          여기 보이면 홈 렌더링은 정상입니다.
+
   #  - block: hero
   #    content:
   #      title: Build Your Landing Pages with Hugo Blox
