@@ -4,13 +4,13 @@
 
 main:
   - name: Home
-    url: /#top
+    url: /en/#top
     weight: 10
   - name: Features
-    url: /#features
+    url: /en/#features
     weight: 20
   - name: Solutions
-    url: /#solutions
+    url: /en/#solutions
     weight: 30
   - name: Resources
     weight: 40
