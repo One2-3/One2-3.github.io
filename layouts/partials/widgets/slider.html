@@ -17,13 +17,10 @@
     <div class="text-red-600 py-12">슬라이드가 없습니다 ({{ $p.Path }})</div>
   {{- else -}}
     <style>
-      /* 가로 스크롤바 숨김 */
       .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
       .no-scrollbar::-webkit-scrollbar{ display:none; }
-      /* 인디케이터 바 */
       .hb-dot{ width:24px; height:2px; border-radius:9999px; background:rgba(255,255,255,.35); opacity:.45; transition:opacity .2s ease; }
       .hb-dot.is-active{ opacity:.95; background:rgba(255,255,255,.95); }
-      /* 텍스트 화살표 버튼 (원/배경 없음) */
       .hb-arrow{ font-size:28px; line-height:1; padding:6px 10px; color:#fff; opacity:.65; }
       .hb-arrow:hover{ opacity:1; }
       .hb-arrow:focus{ outline:none; }
@@ -39,7 +36,7 @@
         {{- $img := (index $imgObj "filename" | default "") -}}
         {{- $url := cond (hasPrefix $img "/") $img (printf "/%s" $img) -}}
 
-        <!-- 폭 고정: shrink-0 + min-w-full -->
+        <!-- 폭 고정: shrink-0 + min-w-full (가로 계산을 scrollLeft/width로 일치시킴) -->
         <div class="hb-slide shrink-0 min-w-full snap-start relative" aria-hidden="true">
           {{- if $img -}}
             <div class="absolute inset-0 z-0 bg-center bg-cover {{ $minh }}"
@@ -77,108 +74,103 @@
       var delay = parseInt(delayAttr, 10);
       if (isNaN(delay) || delay <= 0) delay = 5000;
 
-      var i = 0;
       var timer = null;
       var dotsWrap = c.querySelector('.hb-dots');
       var btnPrev = c.querySelector('.hb-prev');
       var btnNext = c.querySelector('.hb-next');
 
       function slides(){ return c.querySelectorAll('.hb-slide'); }
+      function count(){ return slides().length; }
+      function width(){ return c.clientWidth; }
 
-      function goTo(idx){
-        var s = slides();
-        if (!s.length) return;
-        i = (idx + s.length) % s.length;
-        c.scrollTo({ left: s[i].offsetLeft, behavior: 'smooth' });
-        paint();
+      // 스크롤 위치 ↔ 인덱스 변환 (핵심)
+      function currentIndex(){
+        var w = Math.max(1, width());
+        var idx = Math.round(c.scrollLeft / w);
+        var n = count();
+        if (idx < 0) idx = 0;
+        if (idx > n - 1) idx = n - 1;
+        return idx;
       }
 
-      function step(){ goTo(i + 1); }
+      function scrollToIndex(idx, behavior){
+        var n = count(); if (!n) return;
+        if (idx < 0) idx = 0;
+        if (idx > n - 1) idx = n - 1;
+        c.scrollTo({ left: idx * width(), behavior: behavior || 'smooth' });
+        paint(idx);
+      }
+
+      function step(){
+        scrollToIndex(currentIndex() + 1, 'smooth');
+      }
       function start(){ if (!timer) timer = setInterval(step, delay); }
       function stop(){ if (timer){ clearInterval(timer); timer = null; } }
 
       function makeDots(){
-        var s = slides();
+        var n = count();
         dotsWrap.innerHTML = '';
-        for (var k=0; k<s.length; k++){
+        for (var k=0; k<n; k++){
           var b = document.createElement('button');
           b.type = 'button';
           b.className = 'hb-dot';
           (function(idx){
             b.addEventListener('click', function(){
-              stop(); goTo(idx); start();
+              stop();
+              scrollToIndex(idx, 'smooth');
+              start();
             });
           })(k);
           dotsWrap.appendChild(b);
         }
       }
 
-      function paint(){
-        var s = slides();
-        if (dotsWrap.children.length !== s.length) makeDots();
+      function paint(activeIdx){
+        var idx = (typeof activeIdx === 'number') ? activeIdx : currentIndex();
+        // dots
         var dots = dotsWrap.querySelectorAll('.hb-dot');
+        if (dots.length !== count()) { makeDots(); dots = dotsWrap.querySelectorAll('.hb-dot'); }
         for (var k=0; k<dots.length; k++){
-          dots[k].classList.toggle('is-active', k === i);
+          dots[k].classList.toggle('is-active', k === idx);
         }
-        // aria 동기화
-        for (var j=0; j<s.length; j++){
-          s[j].setAttribute('aria-hidden', j === i ? 'false' : 'true');
-        }
+        // aria
+        slides().forEach(function(el, i){
+          el.setAttribute('aria-hidden', i === idx ? 'false' : 'true');
+        });
       }
 
-      // ▶︎ 고정 느낌 제거용: IntersectionObserver로 현재 슬라이드 정확 추적
-      // 컨테이너를 root로, 0.6 이상 보이면 현재로 간주
-      var io;
-      try {
-        io = new IntersectionObserver(function(entries){
-          var maxRatio = 0, idx = i;
-          entries.forEach(function(en){
-            if (en.intersectionRatio > maxRatio) {
-              maxRatio = en.intersectionRatio;
-              var list = Array.prototype.slice.call(slides());
-              idx = list.indexOf(en.target);
-            }
+      // 스크롤 시 실시간 동기화 (고정 느낌 제거)
+      var scrollTicking = false;
+      c.addEventListener('scroll', function(){
+        if (!scrollTicking){
+          scrollTicking = true;
+          requestAnimationFrame(function(){
+            paint();
+            scrollTicking = false;
           });
-          if (idx !== i && maxRatio >= 0.6){
-            i = idx; paint();
-          }
-        }, { root: c, threshold: [0, .6, 1] });
-
-        slides().forEach(function(el){ io.observe(el); });
-      } catch(e) {
-        // IE 등 구형 브라우저 fallback: 스크롤 거리로 계산
-        c.addEventListener('scroll', function(){
-          var s = slides();
-          var min = Infinity, idx = i;
-          for (var k=0; k<s.length; k++){
-            var d = Math.abs(c.scrollLeft - s[k].offsetLeft);
-            if (d < min){ min = d; idx = k; }
-          }
-          if (idx !== i){ i = idx; paint(); }
-        }, { passive:true });
-      }
+        }
+      }, { passive:true });
 
       // 버튼/호버/터치/키보드
-      btnPrev.addEventListener('click', function(){ stop(); goTo(i-1); start(); });
-      btnNext.addEventListener('click', function(){ stop(); goTo(i+1); start(); });
+      btnPrev.addEventListener('click', function(){ stop(); scrollToIndex(currentIndex()-1, 'smooth'); start(); });
+      btnNext.addEventListener('click', function(){ stop(); scrollToIndex(currentIndex()+1, 'smooth'); start(); });
       c.addEventListener('mouseenter', stop);
       c.addEventListener('mouseleave', start);
       c.addEventListener('touchstart', stop, { passive:true });
       c.addEventListener('touchend', start, { passive:true });
       c.addEventListener('keydown', function(e){
-        if (e.key === 'ArrowLeft'){ stop(); goTo(i-1); start(); }
-        else if (e.key === 'ArrowRight'){ stop(); goTo(i+1); start(); }
+        if (e.key === 'ArrowLeft'){ stop(); scrollToIndex(currentIndex()-1, 'smooth'); start(); }
+        else if (e.key === 'ArrowRight'){ stop(); scrollToIndex(currentIndex()+1, 'smooth'); start(); }
       });
 
-      // 리사이즈 시 위치 재정렬(고정 느낌 방지)
+      // 리사이즈 시 현재 인덱스 위치 재정렬
       window.addEventListener('resize', function(){
-        var s = slides(); if (!s.length) return;
-        c.scrollTo({ left: s[i].offsetLeft, behavior: 'auto' });
+        scrollToIndex(currentIndex(), 'auto');
       });
 
       makeDots();
-      paint();
-      start();
+      paint(0);     // 초기 인디케이터
+      start();      // 자동 넘김 시작
     });
     </script>
   {{- end -}}
