@@ -1,0 +1,35 @@
+{{- $p := .widget -}}
+{{- $params := $p.Params -}}
+{{- $c := (index $params "content" | default dict) -}}
+{{- $id := (index $params "id" | default "solutions") -}}
+{{- $klass := (index (index $params "design" | default dict) "css_class" | default "") -}}
+{{- $items := (index $c "items" | default (slice)) -}}
+
+<section id="{{ $id }}" class="py-16 {{ $klass }}">
+  <div class="grid md:grid-cols-2 gap-10">
+    {{- range $it := $items -}}
+      {{- $img := (index $it "image" | default "") -}}
+      {{- $url := cond (hasPrefix $img "/") $img (printf "/%s" $img) -}}
+
+      <div class="rounded-2xl overflow-hidden shadow bg-white/60 dark:bg-white/5">
+        {{- if $img -}}
+          <img src="{{ $url | relURL }}" class="w-full h-64 object-cover" alt="">
+        {{- end -}}
+        <div class="p-6">
+          {{ with (index $it "title") }}<h3 class="text-xl font-semibold mb-2">{{ . }}</h3>{{ end }}
+          {{ with (index $it "text")  }}<p class="opacity-80 mb-3">{{ . }}</p>{{ end }}
+          {{- with (index $it "features") -}}
+            <ul class="list-disc pl-5 mb-3 opacity-80">
+              {{- range . -}}<li>{{ . }}</li>{{- end -}}
+            </ul>
+          {{- end -}}
+          {{- with (index $it "button") -}}
+            <a href="{{ (index . "url") }}" class="inline-block px-4 py-2 rounded-xl shadow bg-black/80 text-white">
+              {{ (index . "text") }}
+            </a>
+          {{- end -}}
+        </div>
+      </div>
+    {{- end -}}
+  </div>
+</section>

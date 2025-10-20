@@ -1,0 +1,8 @@
+{{- $p := .widget -}} {{- $c := (index $p.Params "content" | default dict) -}}
+<section class="py-12">
+  {{ with (index $c "title") }}
+  <h2 class="text-3xl font-semibold mb-4">{{ . }}</h2>
+  {{ end }} {{ with (index $c "text") }}
+  <div class="prose dark:prose-invert max-w-none">{{ . | markdownify }}</div>
+  {{ end }}
+</section>

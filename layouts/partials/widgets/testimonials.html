@@ -1,0 +1,25 @@
+{{- $p := .widget -}} {{- $c := (index $p.Params "content" | default dict) -}}
+{{- $items := (index $c "items" | default (slice)) -}}
+
+<section class="py-16">
+  <div class="grid md:grid-cols-3 gap-6">
+    {{- range $t := $items -}} {{- $img := (index $t "image" | default "") -}}
+    {{- $url := cond (hasPrefix $img "/") $img (printf "/%s" $img) -}}
+    <div class="rounded-2xl p-6 shadow bg-white/60 dark:bg-white/5">
+      {{- if $img -}}
+      <img
+        class="w-16 h-16 rounded-full mb-3"
+        src="{{ $url | relURL }}"
+        alt=""
+      />
+      {{- end -}} {{ with (index $t "text") }}
+      <p class="italic mb-3">“{{ . }}”</p>
+      {{ end }}
+      <div class="text-sm opacity-80">
+        {{ with (index $t "name") }}<strong>{{ . }}</strong>{{ end }} {{ with
+        (index $t "role") }} · {{ . }}{{ end }}
+      </div>
+    </div>
+    {{- end -}}
+  </div>
+</section>

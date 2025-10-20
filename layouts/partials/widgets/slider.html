@@ -1,0 +1,46 @@
+{{- /* layouts/partials/widgets/slider.html */ -}} {{- $p := .widget -}} {{-
+$params := $p.Params -}} {{- $content := (index $params "content" | default
+dict) -}} {{- $slides := (index $content "slides" | default (slice)) -}} {{-
+$design := (index $params "design" | default dict) -}} {{- $height := (index
+$design "slide_height" | default "70vh") -}} {{- $id := (index $params "id" |
+default "top") -}} {{- /* Tailwind 임의값 유틸 생성 (예: min-h-[70vh]) */ -}}
+{{- $minh := printf "min-h-[%s]" $height -}}
+
+<section id="{{ $id }}" class="w-full">
+  {{- if lt (len $slides) 1 -}}
+  <div class="text-red-600 py-12">슬라이드가 없습니다 ({{ $p.Path }})</div>
+  {{- else -}}
+  <div
+    class="relative w-full overflow-x-auto flex snap-x snap-mandatory {{ $minh }}"
+  >
+    {{- range $s := $slides -}} {{- $bg := (index $s "background" | default
+    dict) -}} {{- $imgObj := (index $bg "image" | default dict) -}} {{- $img :=
+    (index $imgObj "filename" | default "") -}} {{- $url := cond (hasPrefix $img
+    "/") $img (printf "/%s" $img) -}}
+
+    <div class="min-w-full snap-start relative">
+      {{/* 배경 이미지는 style 한 줄만 사용 (빈 규칙 방지) */}} {{- if $img -}}
+      <div
+        class="absolute inset-0 bg-center bg-cover {{ $minh }}"
+        style='background-image:url("{{ $url | relURL }}")'
+      ></div>
+      {{- else -}}
+      <div class="absolute inset-0 bg-center bg-cover {{ $minh }}"></div>
+      {{- end }}
+
+      <div class="absolute inset-0 bg-black/40"></div>
+
+      <div
+        class="relative z-10 max-w-5xl mx-auto px-6 py-16 flex flex-col items-center justify-center text-center {{ $minh }}"
+      >
+        {{- with (index $s "title") -}}
+        <h1 class="text-4xl font-bold mb-4">{{ . }}</h1>
+        {{- end -}} {{- with (index $s "content") -}}
+        <div class="text-lg opacity-90">{{ . | markdownify }}</div>
+        {{- end -}}
+      </div>
+    </div>
+    {{- end -}}
+  </div>
+  {{- end -}}
+</section>
