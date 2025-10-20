@@ -14,6 +14,7 @@ sections:
       pageRef: slider # ← 같은 언어 폴더의 headless 페이지 content/ko/slider.md 를 참조
     design:
       slide_height: 33vh # 높이 조정(원하면 50~80vh로)
+
   - block: markdown
     content:
       title: '테스트 섹션'
