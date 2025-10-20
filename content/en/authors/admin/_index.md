@@ -1,16 +1,10 @@
 ---
 # Display name
-title: 吳健雄
-
-# Name pronunciation (optional)
-name_pronunciation: Chien Shiung Wu
+title: 박지유
 
 # Full name (for SEO)
-first_name: Shiung Wu
-last_name: Chien
-
-# Pronouns (optional)
-pronouns: she/her
+first_name: 박
+last_name: 지유
 
 # Status emoji
 status:
@@ -54,7 +48,7 @@ profiles:
 highlight_name: true
 
 # Author's website URL
-website: ""
+website: ''
 ---
 
 Chien Shiung Wu is a professor of artificial intelligence at the Stanford AI Lab. Her research interests include
