@@ -1,46 +1,97 @@
-{{- /* layouts/partials/widgets/slider.html */ -}} {{- $p := .widget -}} {{-
-$params := $p.Params -}} {{- $content := (index $params "content" | default
-dict) -}} {{- $slides := (index $content "slides" | default (slice)) -}} {{-
-$design := (index $params "design" | default dict) -}} {{- $height := (index
-$design "slide_height" | default "70vh") -}} {{- $id := (index $params "id" |
-default "top") -}} {{- /* Tailwind 임의값 유틸 생성 (예: min-h-[70vh]) */ -}}
+{{- /* layouts/partials/widgets/slider.html */ -}}
+{{- $p := .widget -}}
+{{- $params := $p.Params -}}
+{{- $content := (index $params "content" | default dict) -}}
+{{- $slides := (index $content "slides" | default (slice)) -}}
+{{- $design := (index $params "design" | default dict) -}}
+{{- $height := (index $design "slide_height" | default "70vh") -}}
+{{- $autoplay := (index $design "autoplay_ms" | default 5000) -}}
+{{- $id := (index $params "id" | default "top") -}}
+
+{{- /* Tailwind arbitrary value utility, e.g. min-h-[70vh] */ -}}
 {{- $minh := printf "min-h-[%s]" $height -}}
+
+{{- /* unique container id for this widget instance */ -}}
+{{- $idHash := md5 $p.Path -}}
+{{- $cid := printf "hb-slider-%s" $idHash -}}
 
 <section id="{{ $id }}" class="w-full">
   {{- if lt (len $slides) 1 -}}
-  <div class="text-red-600 py-12">슬라이드가 없습니다 ({{ $p.Path }})</div>
+    <div class="text-red-600 py-12">슬라이드가 없습니다 ({{ $p.Path }})</div>
   {{- else -}}
-  <div
-    class="relative w-full overflow-x-auto flex snap-x snap-mandatory {{ $minh }}"
-  >
-    {{- range $s := $slides -}} {{- $bg := (index $s "background" | default
-    dict) -}} {{- $imgObj := (index $bg "image" | default dict) -}} {{- $img :=
-    (index $imgObj "filename" | default "") -}} {{- $url := cond (hasPrefix $img
-    "/") $img (printf "/%s" $img) -}}
+    <div id="{{ $cid }}" data-autoplay="{{ $autoplay }}" class="relative w-full overflow-x-auto flex snap-x snap-mandatory {{ $minh }}">
+      {{- range $s := $slides -}}
+        {{- $bg := (index $s "background" | default dict) -}}
+        {{- $imgObj := (index $bg "image" | default dict) -}}
+        {{- $img := (index $imgObj "filename" | default "") -}}
+        {{- $url := cond (hasPrefix $img "/") $img (printf "/%s" $img) -}}
 
-    <div class="min-w-full snap-start relative">
-      {{/* 배경 이미지는 style 한 줄만 사용 (빈 규칙 방지) */}} {{- if $img -}}
-      <div
-        class="absolute inset-0 bg-center bg-cover {{ $minh }}"
-        style='background-image:url("{{ $url | relURL }}")'
-      ></div>
-      {{- else -}}
-      <div class="absolute inset-0 bg-center bg-cover {{ $minh }}"></div>
-      {{- end }}
+        <div class="hb-slide min-w-full snap-start relative">
+          {{- if $img -}}
+            <div class="absolute inset-0 bg-center bg-cover {{ $minh }}"
+                 style='background-image:url("{{ $url | relURL }}")'></div>
+          {{- else -}}
+            <div class="absolute inset-0 bg-center bg-cover {{ $minh }}"></div>
+          {{- end }}
+          <div class="absolute inset-0 bg-black/40"></div>
 
-      <div class="absolute inset-0 bg-black/40"></div>
-
-      <div
-        class="relative z-10 max-w-5xl mx-auto px-6 py-16 flex flex-col items-center justify-center text-center {{ $minh }}"
-      >
-        {{- with (index $s "title") -}}
-        <h1 class="text-4xl font-bold mb-4">{{ . }}</h1>
-        {{- end -}} {{- with (index $s "content") -}}
-        <div class="text-lg opacity-90">{{ . | markdownify }}</div>
-        {{- end -}}
-      </div>
+          <div class="relative z-10 max-w-5xl mx-auto px-6 py-16 flex flex-col items-center justify-center text-center {{ $minh }}">
+            {{- with (index $s "title") -}}
+              <h1 class="text-4xl font-bold mb-4">{{ . }}</h1>
+            {{- end -}}
+            {{- with (index $s "content") -}}
+              <div class="text-lg opacity-90">{{ . | markdownify }}</div>
+            {{- end -}}
+          </div>
+        </div>
+      {{- end -}}
     </div>
-    {{- end -}}
-  </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var c = document.getElementById('{{ $cid }}');
+        if (!c) return;
+      
+        // 템플릿 대신 data-attr에서 읽기 → 에디터 경고 제거
+        var delayAttr = c.getAttribute('data-autoplay');
+        var delay = parseInt(delayAttr, 10);
+        if (isNaN(delay) || delay <= 0) delay = 5000;
+      
+        var i = 0;
+        var timer = null;
+      
+        function slides() {
+          return c.querySelectorAll('.hb-slide');
+        }
+      
+        function step() {
+          var s = slides();
+          if (s.length < 2) return;
+          i = (i + 1) % s.length;
+          c.scrollTo({ left: s[i].offsetLeft, behavior: 'smooth' });
+        }
+      
+        function start() {
+          if (!timer) {
+            timer = setInterval(step, delay);
+          }
+        }
+      
+        function stop() {
+          if (timer) {
+            clearInterval(timer);
+            timer = null;
+          }
+        }
+      
+        c.addEventListener('mouseenter', stop);
+        c.addEventListener('mouseleave', start);
+        c.addEventListener('touchstart', stop, { passive: true });
+        c.addEventListener('touchend', start, { passive: true });
+      
+        start();
+      });
+      </script>
+      
   {{- end -}}
 </section>
