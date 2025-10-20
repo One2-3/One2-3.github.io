@@ -3,9 +3,6 @@
 # Hugo Documentation: https://gohugo.io/getting-started/configuration/#all-configuration-settings
 # This file is formatted using YAML syntax - learn more at https://learnxinyminutes.com/docs/yaml/
 
-defaultContentLanguage: ko
-defaultContentLanguageInSubdir: true # /ko/ /en/ 경로로 분리하고 싶으면 true, 루트에 ko를 두고 싶으면 false
-
 title: J1YU Portpolio # Website name
 baseURL: 'https://one2-3.github.io/' # Website URL
 
@@ -44,6 +41,9 @@ cascade:
 
 hasCJKLanguage: false
 removePathAccents: true
+
+defaultContentLanguage: ko
+defaultContentLanguageInSubdir: true # /ko/ /en/ 경로로 분리하고 싶으면 true, 루트에 ko를 두고 싶으면 false
 
 ############################
 ## ADVANCED
