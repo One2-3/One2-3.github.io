@@ -8,12 +8,12 @@ design:
   spacing: '6rem'
 
 sections:
-  - block: slider
-    id: top # 메뉴가 /ko/#top 으로 걸려있으면 유지
+  - block: widget
+    id: top # 메뉴 /ko/#top 앵커와 매칭
     content:
-      pageRef: slider # ← 같은 언어 폴더의 headless 페이지 content/ko/slider.md 를 참조
+      pageRef: slider # ← content/ko/slider.md (widget: slider, headless: true)
     design:
-      slide_height: 33vh # 높이 조정(원하면 50~80vh로)
+      slide_height: 60vh # (옵션) 높이 조정
 
   - block: markdown
     content:
