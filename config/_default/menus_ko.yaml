@@ -17,4 +17,4 @@ main:
     hasChildren: true
   - parent: Resources
     name: Blog
-    url: blog/
+    url: /ko/blog/

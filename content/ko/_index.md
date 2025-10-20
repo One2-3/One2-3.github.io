@@ -8,38 +8,38 @@ design:
   spacing: '6rem'
 
 sections:
-  - block: hero
-    content:
-      title: Build Your Landing Pages with Hugo Blox
-      text: 🧱 EASY. FREE (OPEN SOURCE). NO-CODE  🧱
-      primary_action:
-        text: Get Started
-        url: https://hugoblox.com/templates/
-        icon: rocket-launch
-      secondary_action:
-        text: Read the docs
-        url: https://docs.hugoblox.com
-      announcement:
-        text: 'Announcing the release of version 1.'
-        link:
-          text: 'Read more'
-          url: '/blog/'
-    design:
-      #   spacing:
-      #     padding: [0, 0, 0, 0]
-      #     margin: [0, 0, 0, 0]
-      # For full-screen, add `min-h-screen` below
-      css_class: 'dark'
-      background:
-        color: 'navy'
-        image:
-          # Add your image background to `assets/media/`.
-          filename: bg-triangles.svg
-          filters:
-            brightness: 0.5
-          size: cover
-          position: center
-          parallax: false
+  #  - block: hero
+  #    content:
+  #      title: Build Your Landing Pages with Hugo Blox
+  #      text: 🧱 EASY. FREE (OPEN SOURCE). NO-CODE  🧱
+  #      primary_action:
+  #        text: Get Started
+  #        url: https://hugoblox.com/templates/
+  #        icon: rocket-launch
+  #      secondary_action:
+  #        text: Read the docs
+  #        url: https://docs.hugoblox.com
+  #      announcement:
+  #        text: 'Announcing the release of version 1.'
+  #        link:
+  #          text: 'Read more'
+  #          url: '/blog/'
+  #    design:
+  #   spacing:
+  #     padding: [0, 0, 0, 0]
+  #     margin: [0, 0, 0, 0]
+  # For full-screen, add `min-h-screen` below
+  #      css_class: 'dark'
+  #      background:
+  #        color: 'navy'
+  #        image:
+  #          # Add your image background to `assets/media/`.
+  #          filename: bg-triangles.svg
+  #          filters:
+  #            brightness: 0.5
+  #          size: cover
+  #          position: center
+  #          parallax: false
   #  - block: stats
   #    content:
   #      items:
