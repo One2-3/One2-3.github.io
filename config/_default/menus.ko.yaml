@@ -4,13 +4,13 @@
 
 main:
   - name: Home
-    url: /ko/#top
+    url: /ko/
     weight: 10
   - name: Features
-    url: /ko/#features
+    url: /ko/
     weight: 20
   - name: Solutions
-    url: /ko/#solutions
+    url: /ko/
     weight: 30
   - name: Resources
     weight: 40

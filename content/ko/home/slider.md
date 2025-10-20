@@ -1,6 +1,7 @@
 ---
 widget: slider
 headless: true
+widght: 1
 
 content:
   slides:
@@ -40,8 +41,8 @@ content:
           size: cover
         media: slider/slider3.jpg
         fit: cover
-#design:
-#  slide_height: 33vh
-#  is_fullscreen: true
-#  css_class: snap-section
+design:
+  slide_height: 60vh
+  is_fullscreen: false
+  css_class: snap-section
 ---
