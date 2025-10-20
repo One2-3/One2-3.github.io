@@ -8,31 +8,30 @@
 {{- $autoplay := (index $design "autoplay_ms" | default 5000) -}}
 {{- $id := (index $params "id" | default "top") -}}
 
-{{- /* Tailwind arbitrary value utility, e.g. min-h-[70vh] */ -}}
 {{- $minh := printf "min-h-[%s]" $height -}}
-{{- /* unique id per widget instance */ -}}
 {{- $idHash := md5 $p.Path -}}
 {{- $cid := printf "hb-slider-%s" $idHash -}}
 
 <section id="{{ $id }}" class="w-full">
-
   {{- if lt (len $slides) 1 -}}
-
     <div class="text-red-600 py-12">슬라이드가 없습니다 ({{ $p.Path }})</div>
-
   {{- else -}}
-
     <style>
       /* 가로 스크롤바 숨김 */
       .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none; }
       .no-scrollbar::-webkit-scrollbar{ display:none; }
-      /* 점(바) 인디케이터 */
+      /* 인디케이터 바 */
       .hb-dot{ width:24px; height:2px; border-radius:9999px; background:rgba(255,255,255,.4); opacity:.4; transition:opacity .2s ease; }
-      .hb-dot.is-active{ opacity:.9; background:rgba(255,255,255,.9); }
+      .hb-dot.is-active{ opacity:.95; background:rgba(255,255,255,.9); }
+      /* 내비 버튼 */
+      .hb-nav{ width:36px; height:36px; border-radius:9999px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.35); color:#fff; }
+      .hb-nav:hover{ background:rgba(0,0,0,.55); }
+      .hb-icon{ width:16px; height:16px; }
     </style>
 
     <div id="{{ $cid }}" data-autoplay="{{ $autoplay }}"
-         class="relative no-scrollbar w-full overflow-x-auto flex snap-x snap-mandatory {{ $minh }}">
+         class="relative no-scrollbar w-full overflow-x-auto flex items-stretch snap-x snap-mandatory {{ $minh }}"
+         tabindex="0" aria-roledescription="carousel">
 
       {{- range $s := $slides -}}
         {{- $bg := (index $s "background" | default dict) -}}
@@ -40,16 +39,17 @@
         {{- $img := (index $imgObj "filename" | default "") -}}
         {{- $url := cond (hasPrefix $img "/") $img (printf "/%s" $img) -}}
 
-        <div class="hb-slide min-w-full snap-start relative">
+        <!-- 중요한 클래스: shrink-0 + min-w-full -->
+        <div class="hb-slide shrink-0 min-w-full snap-start relative">
           {{- if $img -}}
-            <div class="absolute inset-0 bg-center bg-cover {{ $minh }}"
+            <div class="absolute inset-0 z-0 bg-center bg-cover {{ $minh }}"
                  style='background-image:url("{{ $url | relURL }}")'></div>
           {{- else -}}
-            <div class="absolute inset-0 bg-center bg-cover {{ $minh }}"></div>
+            <div class="absolute inset-0 z-0 bg-center bg-cover {{ $minh }}"></div>
           {{- end }}
-          <div class="absolute inset-0 bg-black/40"></div>
+          <div class="absolute inset-0 z-10 bg-black/40"></div>
 
-          <div class="relative z-10 max-w-5xl mx-auto px-6 py-16 flex flex-col items-center justify-center text-center {{ $minh }}">
+          <div class="relative z-20 max-w-5xl mx-auto px-6 py-16 flex flex-col items-center justify-center text-center {{ $minh }}">
             {{- with (index $s "title") -}}
               <h1 class="text-4xl font-bold mb-4">{{ . }}</h1>
             {{- end -}}
@@ -60,8 +60,20 @@
         </div>
       {{- end -}}
 
-      <!-- 사진 안쪽 하단의 인디케이터 -->
-      <div class="hb-dots absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-2 pointer-events-auto"></div>
+      <!-- 인디케이터 (사진 안쪽 하단) -->
+      <div class="hb-dots absolute bottom-4 left-0 right-0 z-30 flex justify-center gap-2 pointer-events-auto"></div>
+
+      <!-- 좌우 내비 버튼 -->
+      <button type="button" class="hb-prev hb-nav absolute left-3 top-1/2 -translate-y-1/2 z-40" aria-label="Previous slide">
+        <svg class="hb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <button type="button" class="hb-next hb-nav absolute right-3 top-1/2 -translate-y-1/2 z-40" aria-label="Next slide">
+        <svg class="hb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 6l6 6-6 6"/>
+        </svg>
+      </button>
     </div>
 
     <script>
@@ -76,6 +88,8 @@
       var i = 0;
       var timer = null;
       var dotsWrap = c.querySelector('.hb-dots');
+      var btnPrev = c.querySelector('.hb-prev');
+      var btnNext = c.querySelector('.hb-next');
 
       function slides(){ return c.querySelectorAll('.hb-slide'); }
 
@@ -89,9 +103,7 @@
           (function(idx){
             b.addEventListener('click', function(){
               stop();
-              i = idx;
-              c.scrollTo({ left: slides()[i].offsetLeft, behavior: 'smooth' });
-              paint();
+              goTo(idx);
               start();
             });
           })(k);
@@ -104,23 +116,23 @@
         if (dotsWrap.children.length !== s.length) makeDots();
         var dots = dotsWrap.querySelectorAll('.hb-dot');
         for (var k=0; k<dots.length; k++){
-          if (k === i) dots[k].classList.add('is-active');
-          else dots[k].classList.remove('is-active');
+          dots[k].classList.toggle('is-active', k === i);
         }
       }
 
-      function step(){
+      function goTo(idx){
         var s = slides();
-        if (s.length < 2) return;
-        i = (i + 1) % s.length;
+        if (!s.length) return;
+        i = (idx + s.length) % s.length; // 안전하게 순환
         c.scrollTo({ left: s[i].offsetLeft, behavior: 'smooth' });
         paint();
       }
 
+      function step(){ goTo(i+1); }
       function start(){ if (!timer) timer = setInterval(step, delay); }
       function stop(){ if (timer){ clearInterval(timer); timer = null; } }
 
-      // 스크롤로 슬라이드가 바뀌었을 때 인디케이터 동기화
+      // 스크롤 시 현재 인덱스 동기화
       c.addEventListener('scroll', function(){
         var s = slides();
         var min = Infinity, idx = 0;
@@ -131,16 +143,24 @@
         if (idx !== i){ i = idx; paint(); }
       }, { passive:true });
 
+      // 버튼/호버/터치
+      btnPrev.addEventListener('click', function(){ stop(); goTo(i-1); start(); });
+      btnNext.addEventListener('click', function(){ stop(); goTo(i+1); start(); });
       c.addEventListener('mouseenter', stop);
       c.addEventListener('mouseleave', start);
       c.addEventListener('touchstart', stop, { passive:true });
       c.addEventListener('touchend', start, { passive:true });
+
+      // 키보드 ←/→ 지원 (컨테이너가 focus 가능)
+      c.addEventListener('keydown', function(e){
+        if (e.key === 'ArrowLeft'){ stop(); goTo(i-1); start(); }
+        else if (e.key === 'ArrowRight'){ stop(); goTo(i+1); start(); }
+      });
 
       makeDots();
       paint();
       start();
     });
     </script>
-
   {{- end -}}
 </section>
