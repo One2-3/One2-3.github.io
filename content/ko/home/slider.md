@@ -1,7 +1,7 @@
 ---
 widget: slider
 headless: true
-widght: 1
+weight: 1
 
 content:
   slides:
