@@ -42,7 +42,7 @@ content:
         media: slider/slider3.jpg
         fit: cover
 design:
-  slide_height: 60vh
+  slide_height: 44vh
   is_fullscreen: false
   css_class: snap-section
 ---

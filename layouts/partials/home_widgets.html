@@ -16,12 +16,14 @@
       {{- /* weight 순 정렬 (없으면 100 취급) */}}
       {{- $sorted := sort $widgets "Params.weight" "asc" -}}
       {{- range $p := $sorted -}}
-        {{- $w := lower (printf "%v" (index $p.Params "widget")) -}}
+        {{- $raw := printf "%v" (index $p.Params "widget") -}}
+        {{- $w := lower (replace $raw "." "_") -}}   {{/* about.avatar -> about_avatar, cta.image_paragraph -> cta_image_paragraph */}}
         {{- $partial := printf "widgets/%s.html" $w -}}
+
         {{- if templates.Exists (printf "partials/%s" $partial) -}}
           {{ partial $partial (dict "page" . "widget" $p) }}
         {{- else -}}
-          <div class="py-8 text-amber-600">알 수 없는 위젯: {{ $w }}</div>
+          <div class="py-8 text-amber-600">알 수 없는 위젯: {{ $raw }}</div>
         {{- end -}}
       {{- end -}}
     {{- end -}}
