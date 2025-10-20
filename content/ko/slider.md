@@ -1,7 +1,6 @@
 ---
 widget: slider
 headless: true
-weight: 5
 
 content:
   slides:
@@ -12,10 +11,10 @@ content:
       background:
         color: '#000'
         image:
-          filename: slider/img1.jpg
+          filename: slider/slider1.jpg
           position: center
           size: cover
-        media: slider/img1.jpg
+        media: slider/slider1.jpg
         fit: cover
     - title: Project
       content: |
@@ -24,10 +23,10 @@ content:
       background:
         color: '#111'
         image:
-          filename: slider/img2.jpg
+          filename: slider/slider2.jpg
           position: center
           size: cover
-        media: slider/img2.jpg
+        media: slider/slider2.jpg
         fit: cover
     - title: Contact
       content: |
@@ -36,14 +35,13 @@ content:
       background:
         color: '#000'
         image:
-          filename: slider/img3.jpg
+          filename: slider/slider3.jpg
           position: center
           size: cover
-        media: slider/img3.jpg
+        media: slider/slider3.jpg
         fit: cover
-
-design:
-  slide_height: 33vh
+#design:
+#  slide_height: 33vh
 #  is_fullscreen: true
 #  css_class: snap-section
 ---
