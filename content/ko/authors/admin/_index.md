@@ -19,7 +19,9 @@ role: 컴퓨터인공지능학부 학부생
 # Organizations/Affiliations to show in About widget
 organizations:
   - name: 전북대학교
-    url: https://www.jbnu.ac.kr/web/index.do
+    url: 'https://www.jbnu.ac.kr'
+  - name: 컴퓨터인공지능학부
+    url: 'https://csai.jbnu.ac.kr'
 
 # Short bio (displayed in user profile at end of posts)
 bio: My research interests include distributed robotics, mobile computing and programmable matter.
@@ -42,15 +44,10 @@ profiles:
   - icon: academicons/cv
     url: uploads/resume.pdf
     label: 이력서 다운로드
-  - icon: rss
-    url: ./post/index.xml
-    label: Subscribe to my blog via RSS feed
-
 # Highlight the author in author lists? (true/false)
-highlight_name: true
-
+#highlight_name: true
 # Author's website URL
-website: ''
+#website: ''
 ---
 
 Chien Shiung Wu is a professor of artificial intelligence at the Stanford AI Lab. Her research interests include
