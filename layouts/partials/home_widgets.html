@@ -1,31 +1,23 @@
-{{- $lang := .Lang | default "ko" -}}
-{{- $home := site.GetPage (printf "/%s/home" $lang) -}}
+{{- $lang := .Lang | default "ko" -}} {{- $home := site.GetPage (printf
+"/%s/home" $lang) -}}
 
 <section class="container mx-auto px-6">
   {{- if not $home -}}
-    <div class="text-red-600 py-12">content/{{ $lang }}/home/index.md 를 찾을 수 없습니다.</div>
-  {{- else -}}
-    {{/* leaf 번들에서는 자식 .md가 Pages가 아니라 Resources 입니다. */}}
-    {{- $all := $home.Resources.Match "**.md" | default (slice) -}}
-    {{- /* index.md 제외하고 widget 파라미터 있는 파일만 */}}
-    {{- $widgets := where (where $all "File.BaseFileName" "!=" "index") "Params.widget" "!=" nil | default (slice) -}}
-
-    {{- if eq (len $widgets) 0 -}}
-      <div class="text-red-600 py-12">home 폴더에 위젯(.md) 파일이 없습니다.</div>
-    {{- else -}}
-      {{- /* weight 순 정렬 (없으면 100 취급) */}}
-      {{- $sorted := sort $widgets "Params.weight" "asc" -}}
-      {{- range $p := $sorted -}}
-        {{- $raw := printf "%v" (index $p.Params "widget") -}}
-        {{- $w := lower (replace $raw "." "_") -}}   {{/* about.avatar -> about_avatar, cta.image_paragraph -> cta_image_paragraph */}}
-        {{- $partial := printf "widgets/%s.html" $w -}}
-
-        {{- if templates.Exists (printf "partials/%s" $partial) -}}
-          {{ partial $partial (dict "page" . "widget" $p) }}
-        {{- else -}}
-          <div class="py-8 text-amber-600">알 수 없는 위젯: {{ $raw }}</div>
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
-  {{- end -}}
+  <div class="text-red-600 py-12">
+    content/{{ $lang }}/home/index.md 를 찾을 수 없습니다.
+  </div>
+  {{- else -}} {{/* leaf 번들에서는 자식 .md가 Pages가 아니라 Resources 입니다.
+  */}} {{- $all := $home.Resources.Match "**.md" | default (slice) -}} {{- /*
+  index.md 제외하고 widget 파라미터 있는 파일만 */}} {{- $widgets := where
+  (where $all "File.BaseFileName" "!=" "index") "Params.widget" "!=" nil |
+  default (slice) -}} {{- if eq (len $widgets) 0 -}}
+  <div class="text-red-600 py-12">home 폴더에 위젯(.md) 파일이 없습니다.</div>
+  {{- else -}} {{- /* weight 순 정렬 (없으면 100 취급) */}} {{- $sorted := sort
+  $widgets "Params.weight" "asc" -}} {{- range $p := $sorted -}} {{- $w := lower
+  (printf "%v" (index $p.Params "widget")) -}} {{- $wfile := replace $w "." "_"
+  -}} {{/* about.avatar → about_avatar */}} {{- $partial := printf
+  "widgets/%s.html" $wfile -}} {{- if templates.Exists (printf "partials/%s"
+  $partial) -}} {{ partial $partial (dict "page" . "widget" $p) }} {{- else -}}
+  <div class="py-8 text-amber-600">알 수 없는 위젯: {{ $w }}</div>
+  {{- end -}} {{- end -}} {{- end -}} {{- end -}}
 </section>
