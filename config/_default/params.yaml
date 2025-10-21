@@ -31,7 +31,6 @@ marketing:
     local_business_type: ''
     org_name: '박지유'
     org_url: 'https://one2-3.github.io'
-    org_logo: '/media/logo.png'
     description: '박지유 포트폴리오'
   analytics:
     google_analytics: ''
@@ -53,7 +52,7 @@ header:
     logo:
       text: ''
       # Logo filename in `assets/media/` folder
-      filename: 'logo.svg'
+      filename: 'logo.png
     show_search: true
     show_theme_chooser: true
 

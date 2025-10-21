@@ -31,7 +31,7 @@ content:
         fit: cover
     - title: Contact
       content: |
-        협업 제안하기
+        협업을 제안해보세요
       align: center
       background:
         color: '#000'

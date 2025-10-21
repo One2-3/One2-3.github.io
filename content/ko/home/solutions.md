@@ -14,7 +14,7 @@ content:
         - 'No JavaScript knowledge required'
       image: 'build-website.png' # assets/media/build-website.png 존재 확인됨
       button:
-        text: 'Get Started'
+        text: '자세히보기'
         url: 'https://hugoblox.com/templates/'
 
     - title: 'Large Community'
@@ -26,7 +26,7 @@ content:
         - 'Share your site and get feedback'
       image: 'coffee.jpg' # assets/media/coffee.jpg 존재 확인됨
       button:
-        text: 'Join Discord'
+        text: '자세히보기'
         url: 'https://discord.gg/z8wNYzb'
 
 design:
