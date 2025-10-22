@@ -52,7 +52,7 @@ header:
     logo:
       text: ''
       # Logo filename in `assets/media/` folder
-      filename: 'logo.png
+      filename: 'logo.png'
     show_search: true
     show_theme_chooser: true
 
