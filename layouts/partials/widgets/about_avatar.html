@@ -1,42 +1,41 @@
-{{- /* layouts/partials/widgets/about_avatar.html
-  Renders widget: about.avatar (+ optional content.pageRef e.g. authors/admin)
-  Safe: no .page deref; use site.Language.Lang and explicit if-branches
-*/ -}}
+{{- /* layouts/partials/widgets/about_avatar.html */ -}}
 
 {{- $widget := .widget -}}
 {{- $params := $widget.Params -}}
 {{- $c      := (index $params "content" | default dict) -}}
 
-{{- /* 언어는 전역에서 안전하게 */ -}}
 {{- $lang := (default "ko" (site.Language.Lang)) -}}
 
 {{- /* pageRef 처리 */ -}}
 {{- $ref := (index $c "pageRef" | default "") -}}
-{{- $srcPage := nil -}}
+{{- $srcPage := "" -}}
 {{- if $ref -}}
-{{- $srcPath := printf "/%s/%s" $lang $ref -}}
-{{- $srcPage = site.GetPage $srcPath -}}
+  {{- $srcPath := printf "/%s/%s" $lang $ref -}}
+  {{- $p := site.GetPage $srcPath -}}
+  {{- if $p -}}
+    {{- $srcPage = $p -}}
+  {{- end -}}
 {{- end -}}
 
-{{- /* pageRef에서 가져온 기본값 구성 (있을 때만) */ -}}
+{{- /* pageRef 기본값 구성 (있을 때만) */ -}}
 {{- $base := dict -}}
-{{- if $srcPage -}}
-{{- $titleBase   := $srcPage.Title -}}
-{{- $textBase    := (or ($srcPage.Params.description) ($srcPage.Params.bio)) -}}
-{{- $avatarBase  := (or ($srcPage.Params.avatar) ($srcPage.Params.image)) -}}
-{{- $githubBase  := $srcPage.Params.github -}}
-{{- $instaBase   := $srcPage.Params.instagram -}}
-{{- $emailBase   := $srcPage.Params.email -}}
-{{- $socialsBase := $srcPage.Params.socials -}}
-{{- $base = dict
-    "title"    $titleBase
-    "text"     $textBase
-    "avatar"   $avatarBase
-    "github"   $githubBase
-    "instagram" $instaBase
-    "email"    $emailBase
-    "socials"  $socialsBase
- -}}
+{{- with $srcPage -}}
+  {{- $titleBase   := .Title -}}
+  {{- $textBase    := (or (.Params.description) (.Params.bio)) -}}
+  {{- $avatarBase  := (or (.Params.avatar) (.Params.image)) -}}
+  {{- $githubBase  := .Params.github -}}
+  {{- $instaBase   := .Params.instagram -}}
+  {{- $emailBase   := .Params.email -}}
+  {{- $socialsBase := .Params.socials -}}
+  {{- $base = dict
+        "title"     $titleBase
+        "text"      $textBase
+        "avatar"    $avatarBase
+        "github"    $githubBase
+        "instagram" $instaBase
+        "email"     $emailBase
+        "socials"   $socialsBase
+     -}}
 {{- end -}}
 
 {{- /* content 값이 우선이 되도록 병합 */ -}}
@@ -49,73 +48,75 @@
 
 {{- /* socials가 비었으면 개별 필드로 조합 */ -}}
 {{- if eq (len $socials) 0 -}}
-{{- $gh := (index $merged "github" | default "") -}}
-{{- $ig := (index $merged "instagram" | default "") -}}
-{{- $em := (index $merged "email" | default "") -}}
-{{- if $gh }}{{- $socials = (append $socials (dict "type" "github" "url" $gh "label" "GitHub")) -}}{{ end -}}
-{{- if $ig }}{{- $socials = (append $socials (dict "type" "instagram" "url" $ig "label" "Instagram")) -}}{{ end -}}
-{{- if $em }}{{- $socials = (append $socials (dict "type" "email" "url" (printf "mailto:%s" $em) "label" "Email")) -}}{{ end -}}
+  {{- $gh := (index $merged "github" | default "") -}}
+  {{- $ig := (index $merged "instagram" | default "") -}}
+  {{- $em := (index $merged "email" | default "") -}}
+  {{- if $gh }}{{- $socials = (append $socials (dict "type" "github" "url" $gh "label" "GitHub")) -}}{{ end -}}
+  {{- if $ig }}{{- $socials = (append $socials (dict "type" "instagram" "url" $ig "label" "Instagram")) -}}{{ end -}}
+  {{- if $em }}{{- $socials = (append $socials (dict "type" "email" "url" (printf "mailto:%s" $em) "label" "Email")) -}}{{ end -}}
 {{- end -}}
 
 {{- /* 아바타 URL 계산: 외부/절대/페이지리소스/assets(media) */ -}}
 {{- $avatarURL := "" -}}
 {{- if $avatar -}}
-{{- if or (hasPrefix $avatar "http://") (hasPrefix $avatar "https://") -}}
-{{- $avatarURL = $avatar -}}
-{{- else if hasPrefix $avatar "/" -}}
-{{- $avatarURL = $avatar -}}
-{{- else if $srcPage -}}
-{{- with ($srcPage.Resources.GetMatch $avatar) -}}
-  {{- $avatarURL = .RelPermalink -}}
-{{- else -}}
-  {{- $avatarURL = (printf "/media/%s" $avatar) -}}
-{{- end -}}
-{{- else -}}
-{{- $avatarURL = (printf "/media/%s" $avatar) -}}
-{{- end -}}
+  {{- if or (hasPrefix $avatar "http://") (hasPrefix $avatar "https://") -}}
+    {{- $avatarURL = $avatar -}}
+  {{- else if hasPrefix $avatar "/" -}}
+    {{- $avatarURL = $avatar -}}
+  {{- else -}}
+    {{- with $srcPage -}}
+      {{- with (.Resources.GetMatch $avatar) -}}
+        {{- $avatarURL = .RelPermalink -}}
+      {{- else -}}
+        {{- $avatarURL = (printf "/media/%s" $avatar) -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $avatarURL = (printf "/media/%s" $avatar) -}}
+    {{- end -}}
+  {{- end -}}
 {{- end -}}
 
 <section class="py-16">
-<div class="max-w-4xl mx-auto grid md:grid-cols-[160px_1fr] gap-8 items-center">
+  <div class="max-w-4xl mx-auto grid md:grid-cols-[160px_1fr] gap-8 items-center">
 
-<div class="flex justify-center">
-  {{- if $avatarURL -}}
-    <img src="{{ $avatarURL }}" alt="avatar" class="w-40 h-40 rounded-full object-cover shadow">
-  {{- else -}}
-    <div class="w-40 h-40 rounded-full bg-gray-300 dark:bg-gray-700"></div>
-  {{- end -}}
-</div>
-
-<div>
-  {{- with $title -}}<h2 class="text-3xl font-semibold mb-3">{{ . }}</h2>{{- end -}}
-  {{- with $text  -}}<div class="prose dark:prose-invert max-w-none mb-4">{{ . | markdownify }}</div>{{- end -}}
-
-  {{- with $btn -}}
-    <a href="{{ (index . "url") }}" class="inline-block px-4 py-2 rounded-xl shadow bg-black/80 text-white mb-4">
-      {{ (index . "text") }}
-    </a>
-  {{- end -}}
-
-  {{- if gt (len $socials) 0 -}}
-    <div class="flex flex-wrap gap-3">
-      {{- range $s := $socials -}}
-        {{- $type  := lower (index $s "type" | default "") -}}
-        {{- $url   := (index $s "url"  | default "#") -}}
-        {{- $label := (index $s "label" | default (title $type)) -}}
-        <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition">
-          {{- if eq $type "github" -}}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.24c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.11-.76.08-.75.08-.75 1.22.09 1.86 1.26 1.86 1.26 1.09 1.86 2.86 1.32 3.56 1.01.11-.8.43-1.32.78-1.63-2.66-.3-5.46-1.33-5.46-5.9 0-1.3.47-2.37 1.24-3.2-.12-.3-.54-1.52.12-3.16 0 0 1.01-.32 3.3 1.22a11.4 11.4 0 0 1 6 0c2.29-1.54 3.29-1.22 3.29-1.22.67 1.64.25 2.86.12 3.16.77.83 1.24 1.9 1.24 3.2 0 4.59-2.8 5.59-5.47 5.89.44.38.83 1.11.83 2.25v3.34c0 .32.21.7.83.58A12 12 0 0 0 12 .5"/></svg>
-          {{- else if eq $type "instagram" -}}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.51 5.51 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zm6.25-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25z"/></svg>
-          {{- else if eq $type "email" -}}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v.01L12 13l8-6.99V6H4zm16 12V9.25l-7.4 5.16a1 1 0 0 1-1.2 0L4 9.25V18h16z"/></svg>
-          {{- end -}}
-          <span>{{ $label }}</span>
-        </a>
+    <div class="flex justify-center">
+      {{- if $avatarURL -}}
+        <img src="{{ $avatarURL }}" alt="avatar" class="w-40 h-40 rounded-full object-cover shadow">
+      {{- else -}}
+        <div class="w-40 h-40 rounded-full bg-gray-300 dark:bg-gray-700"></div>
       {{- end -}}
     </div>
-  {{- end -}}
-</div>
-</div>
+
+    <div>
+      {{- with $title -}}<h2 class="text-3xl font-semibold mb-3">{{ . }}</h2>{{- end -}}
+      {{- with $text  -}}<div class="prose dark:prose-invert max-w-none mb-4">{{ . | markdownify }}</div>{{- end -}}
+
+      {{- with $btn -}}
+        <a href="{{ (index . "url") }}" class="inline-block px-4 py-2 rounded-xl shadow bg-black/80 text-white mb-4">
+          {{ (index . "text") }}
+        </a>
+      {{- end -}}
+
+      {{- if gt (len $socials) 0 -}}
+        <div class="flex flex-wrap gap-3">
+          {{- range $s := $socials -}}
+            {{- $type  := lower (index $s "type" | default "") -}}
+            {{- $url   := (index $s "url"  | default "#") -}}
+            {{- $label := (index $s "label" | default (title $type)) -}}
+            <a href="{{ $url }}" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition">
+              {{- if eq $type "github" -}}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.24c-3.34.73-4.04-1.61-4.04-1.61-.55-1.4-1.35-1.77-1.35-1.77-1.11-.76.08-.75.08-.75 1.22.09 1.86 1.26 1.86 1.26 1.09 1.86 2.86 1.32 3.56 1.01.11-.8.43-1.32.78-1.63-2.66-.3-5.46-1.33-5.46-5.9 0-1.3.47-2.37 1.24-3.2-.12-.3-.54-1.52.12-3.16 0 0 1.01-.32 3.3 1.22a11.4 11.4 0 0 1 6 0c2.29-1.54 3.29-1.22 3.29-1.22.67 1.64.25 2.86.12 3.16.77.83 1.24 1.9 1.24 3.2 0 4.59-2.8 5.59-5.47 5.89.44.38.83 1.11.83 2.25v3.34c0 .32.21.7.83.58A12 12 0 0 0 12 .5"/></svg>
+              {{- else if eq $type "instagram" -}}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.51 5.51 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zm6.25-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25z"/></svg>
+              {{- else if eq $type "email" -}}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v.01L12 13l8-6.99V6H4zm16 12V9.25l-7.4 5.16a1 1 0 0 1-1.2 0L4 9.25V18h16z"/></svg>
+              {{- end -}}
+              <span>{{ $label }}</span>
+            </a>
+          {{- end -}}
+        </div>
+      {{- end -}}
+    </div>
+  </div>
 </section>
