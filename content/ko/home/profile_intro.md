@@ -3,6 +3,8 @@ widget: about.avatar_intro
 headless: true
 weight: 2
 content:
-  avatarRef: authors/admin # ← 아바타/이미지 가져올 페이지
-  textRef: home/intro # ← 제목/텍스트 가져올 페이지 (intro.md)
+  # avatarRef를 쓰고 싶으면 그대로 두되, 사진이 확실히 뜨게 'avatar'도 함께 명시
+  avatarRef: authors/admin
+  textRef: home/intro
+  avatar: "/media/avatar.png"   # ← 확실한 절대경로( static/media/avatar.png 에 파일 존재 )
 ---

@@ -14,7 +14,7 @@ content:
     - 메일 : qkrwldb1695@naver.com
 
   # 아래 두 항목은 테마에 따라 선택
-  avatar: "avatar.png"
+  #avatar: "avatar.png"
   # button:
   #   text: "블로그 보기"
   #   url: "/ko/blog/"
