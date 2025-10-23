@@ -25,20 +25,18 @@ organizations:
   - name: 컴퓨터인공지능학부
     url: 'https://csai.jbnu.ac.kr'
 
-content:
-  title: ''
-  text: |
-    - 이름 : 박지유
-    - 성별 : 여
-    - 나이 : 22세(04년생)
-    - 학교 : 전북대학교
-    - 전공 : 컴퓨터인공지능학부
-    - 메일 : qkrwldb1695@naver.com
+description: |-
+  - 이름 : 박지유
+  - 성별 : 여
+  - 나이 : 22세(04년생)
+  - 학교 : 전북대학교
+  - 전공 : 컴퓨터인공지능학부
+  - 메일 : qkrwldb1695@naver.com
 
 
 # Social Networking
 # Need to use another icon? Simply download the SVG icon to your `assets/media/icons/` folder.
-profiles:
+socials:
   - icon: at-symbol
     url: 'mailto:qkrwldb1695@naver.com'
     label: 이메일
@@ -59,7 +57,3 @@ profiles:
 # Author's website URL
 #website: ''
 ---
-
-Chien Shiung Wu is a professor of artificial intelligence at the Stanford AI Lab. Her research interests include
-distributed robotics, mobile computing and programmable matter. She leads the Robotic Neurobiology group, which develops
-self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
