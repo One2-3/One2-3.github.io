@@ -1,6 +1,7 @@
 ---
 # Display name
 title: 박지유
+avatar: "avatar.png"  
 
 # Full name (for SEO)
 first_name: 박
