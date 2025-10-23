@@ -1,52 +1,77 @@
-{{- /* Renders widget: about.avatar_intro content.avatarRef: ex) authors/admin
-content.textRef: ex) home/intro (또는 별도 페이지) 오른쪽 텍스트 영역은
-textRef의 title/text를 우선 사용 */ -}} {{- $ctx := . -}} {{- $widget := (index
-$ctx "widget") -}} {{- $params := $widget.Params -}} {{- $c := (index $params
-"content" | default dict) -}} {{- $lang := (default "ko" (site.Language.Lang))
--}} {{- /* 참조 페이지 찾기 */ -}} {{- $avatarRef := (index $c "avatarRef" |
-default "") -}} {{- $textRef := (index $c "textRef" | default "") -}} {{-
-$avatarPage := nil -}} {{- $textPage := nil -}} {{- if $avatarRef -}} {{-
-$avatarPage = site.GetPage (printf "/%s/%s" $lang $avatarRef) -}} {{- end -}}
-{{- if $textRef -}} {{- $textPage = site.GetPage (printf "/%s/%s" $lang
-$textRef) -}} {{- end -}} {{- /* 이미지 URL 계산 (외부/절대/페이지
-리소스/assets/media) */ -}} {{- $avatarURL := "" -}} {{- $avatarVal := (index $c
-"avatar" | default "") -}} {{- if and (eq $avatarVal "") $avatarPage -}} {{-
-$avatarVal = (or ($avatarPage.Params.avatar) ($avatarPage.Params.image)) -}} {{-
-end -}} {{- if $avatarVal -}} {{- if or (hasPrefix $avatarVal "http://")
-(hasPrefix $avatarVal "https://") -}} {{- $avatarURL = $avatarVal -}} {{- else
-if hasPrefix $avatarVal "/" -}} {{- $avatarURL = $avatarVal -}} {{- else if
-$avatarPage -}} {{- with ($avatarPage.Resources.GetMatch $avatarVal) -}} {{-
-$avatarURL = .RelPermalink -}} {{- else -}} {{- $avatarURL = (printf "/media/%s"
-$avatarVal) -}} {{- end -}} {{- else -}} {{- $avatarURL = (printf "/media/%s"
-$avatarVal) -}} {{- end -}} {{- end -}} {{- /* 텍스트(제목/본문) 우선순위:
-textRef → content.title/text */ -}} {{- $title := (index $c "title") -}} {{-
-$text := (index $c "text") -}} {{- if $textPage -}} {{- $title = (or $title
-$textPage.Title) -}} {{- $text = (or $text (or ($textPage.Params.description)
-($textPage.Params.bio))) -}} {{- end -}}
+{{- /* Renders widget: about.avatar_intro
+  content.avatarRef: ex) authors/admin
+  content.textRef:   ex) home/intro
+  안전 버전: nil 리터럴 사용 안 함, with/if 분기만 사용
+*/ -}}
+
+{{- $widget := .widget -}}
+{{- $params := $widget.Params -}}
+{{- $c      := (index $params "content" | default dict) -}}
+{{- $lang   := (default "ko" (site.Language.Lang)) -}}
+
+{{- /* 참조 페이지 경로 구성 */ -}}
+{{- $avatarRef := (index $c "avatarRef" | default "") -}}
+{{- $textRef   := (index $c "textRef"   | default "") -}}
+
+{{- /* 참조 페이지 로드 (값이 있을 때만) */ -}}
+{{- $avatarPage := "" -}}
+{{- if $avatarRef -}}
+{{- $p := site.GetPage (printf "/%s/%s" $lang $avatarRef) -}}
+{{- if $p -}}{{- $avatarPage = $p -}}{{- end -}}
+{{- end -}}
+{{- $textPage := "" -}}
+{{- if $textRef -}}
+{{- $tp := site.GetPage (printf "/%s/%s" $lang $textRef) -}}
+{{- if $tp -}}{{- $textPage = $tp -}}{{- end -}}
+{{- end -}}
+
+{{- /* 아바타 이미지 값: content.avatar > avatarPage.Params.avatar|image */ -}}
+{{- $avatarVal := (index $c "avatar" | default "") -}}
+{{- if and (eq $avatarVal "") $avatarPage -}}
+{{- $ap := $avatarPage -}}
+{{- $avatarVal = (or ($ap.Params.avatar) ($ap.Params.image)) -}}
+{{- end -}}
+
+{{- /* 아바타 URL 계산: 외부/절대/페이지리소스/assets(media) */ -}}
+{{- $avatarURL := "" -}}
+{{- if $avatarVal -}}
+{{- if or (hasPrefix $avatarVal "http://") (hasPrefix $avatarVal "https://") -}}
+{{- $avatarURL = $avatarVal -}}
+{{- else if hasPrefix $avatarVal "/" -}}
+{{- $avatarURL = $avatarVal -}}
+{{- else -}}
+{{- if $avatarPage -}}
+  {{- with ($avatarPage.Resources.GetMatch $avatarVal) -}}
+    {{- $avatarURL = .RelPermalink -}}
+  {{- else -}}
+    {{- $avatarURL = (printf "/media/%s" $avatarVal) -}}
+  {{- end -}}
+{{- else -}}
+  {{- $avatarURL = (printf "/media/%s" $avatarVal) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- /* 텍스트(제목/본문): textRef 우선, 없으면 content.title/text 사용 */ -}}
+{{- $title := (index $c "title") -}}
+{{- $text  := (index $c "text")  -}}
+{{- with $textPage -}}
+{{- if not $title -}}{{- $title = .Title -}}{{- end -}}
+{{- if not $text  -}}{{- $text  = (or (.Params.description) (.Params.bio)) -}}{{- end -}}
+{{- end -}}
 
 <section class="py-16">
-  <div
-    class="max-w-5xl mx-auto grid md:grid-cols-[200px_1fr] gap-8 items-start"
-  >
-    <div class="flex justify-center md:justify-start">
-      {{- if $avatarURL -}}
-      <img
-        src="{{ $avatarURL }}"
-        alt="avatar"
-        class="w-48 h-48 rounded-2xl object-cover shadow"
-      />
-      {{- else -}}
-      <div class="w-48 h-48 rounded-2xl bg-gray-300 dark:bg-gray-700"></div>
-      {{- end -}}
-    </div>
-    <div>
-      {{- with $title -}}
-      <h2 class="text-3xl font-semibold mb-3">{{ . }}</h2>
-      {{- end -}} {{- with $text -}}
-      <div class="prose dark:prose-invert max-w-none">
-        {{ . | markdownify }}
-      </div>
-      {{- end -}}
-    </div>
-  </div>
+<div class="max-w-5xl mx-auto grid md:grid-cols-[200px_1fr] gap-8 items-start">
+<div class="flex justify-center md:justify-start">
+  {{- if $avatarURL -}}
+    <img src="{{ $avatarURL }}" alt="avatar" class="w-48 h-48 rounded-2xl object-cover shadow">
+  {{- else -}}
+    <div class="w-48 h-48 rounded-2xl bg-gray-300 dark:bg-gray-700"></div>
+  {{- end -}}
+</div>
+<div>
+  {{- with $title -}}<h2 class="text-3xl font-semibold mb-3">{{ . }}</h2>{{- end -}}
+  {{- with $text  -}}<div class="prose dark:prose-invert max-w-none">{{ . | markdownify }}</div>{{- end -}}
+</div>
+</div>
 </section>
