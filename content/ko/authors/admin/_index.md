@@ -43,7 +43,7 @@ socials:
   - type: github
     url: https://x.com/BuildLore
     label: 깃허브
-  - type: camera
+  - type: instagram
     url: https://www.instagram.com/
     label: 인스타그램
   # Link to a PDF of your resume/CV - upload it to `static/uploads/resume.pdf`
