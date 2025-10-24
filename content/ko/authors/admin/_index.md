@@ -2,7 +2,7 @@
 # Display name
 title: 박지유
 headless: true 
-avatar: "avatar.png"  
+avatar: "/media/avatar.png"  
 
 # Full name (for SEO)
 first_name: 박
@@ -37,21 +37,21 @@ description: |-
 # Social Networking
 # Need to use another icon? Simply download the SVG icon to your `assets/media/icons/` folder.
 socials:
-  - icon: at-symbol
+  - type: email
     url: 'mailto:qkrwldb1695@naver.com'
     label: 이메일
-  - icon: brands/github
+  - type: github
     url: https://x.com/BuildLore
     label: 깃허브
-  - icon: brands/instagram
+  - type: instagram
     url: https://www.instagram.com/
     label: 인스타그램
-  - icon: brands/linkedin
+  - type: linkedin
     url: https://www.linkedin.com/
   # Link to a PDF of your resume/CV - upload it to `static/uploads/resume.pdf`
-  - icon: academicons/cv
-    url: uploads/resume.pdf
-    label: 이력서 다운로드
+#  - type: academicons/cv
+#    url: uploads/resume.pdf
+#    label: 이력서 다운로드
 # Highlight the author in author lists? (true/false)
 #highlight_name: true
 # Author's website URL
