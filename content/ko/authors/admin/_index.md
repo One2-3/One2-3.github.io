@@ -43,11 +43,9 @@ socials:
   - type: github
     url: https://x.com/BuildLore
     label: 깃허브
-  - type: instagram
+  - type: camera
     url: https://www.instagram.com/
     label: 인스타그램
-  - type: linkedin
-    url: https://www.linkedin.com/
   # Link to a PDF of your resume/CV - upload it to `static/uploads/resume.pdf`
 #  - type: academicons/cv
 #    url: uploads/resume.pdf
