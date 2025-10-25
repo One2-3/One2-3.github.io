@@ -1,0 +1,2 @@
+.btn, a.btn { transition: background-color .2s ease, color .2s ease; }
+.btn:hover, a.btn:hover { filter: brightness(1.1); }

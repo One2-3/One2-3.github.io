@@ -32,6 +32,7 @@ marketing:
     org_name: '박지유'
     org_url: 'https://one2-3.github.io'
     description: '박지유 포트폴리오'
+    image: '/media/avatar.png'
   analytics:
     google_analytics: ''
     baidu_tongji: ''
@@ -39,7 +40,7 @@ marketing:
     fathom: ''
     pirsch: ''
   verification:
-    google: ''
+    google: ''    #등록 필요
     baidu: ''
 
 # Site header
