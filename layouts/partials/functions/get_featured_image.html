@@ -1,0 +1,5 @@
+{{ $img := .Params.image }}
+{{ if reflect.IsMap $img }}
+  {{ $img = $img.filename }}
+{{ end }}
+{{ return $img }}
