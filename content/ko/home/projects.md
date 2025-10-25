@@ -10,7 +10,7 @@ items:
     features:
       - "소개1"
       - "소개2"
-    image: "coffee.jpg"      # static/media/coffee.jpg 에 파일 있어야 함
+    image: "pro1.jpg"      # static/media/coffee.jpg 에 파일 있어야 함
     button:
       text: "자세히보기"
       url: "/ko/projects/p1/"  # 원하는 경로로
@@ -19,7 +19,7 @@ items:
     features:
       - "소개1"
       - "소개2"
-    image: "coffee.jpg"      # static/media/coffee.jpg 에 파일 있어야 함
+    image: "pro2.jpg"      # static/media/coffee.jpg 에 파일 있어야 함
     button:
       text: "자세히보기"
       url: "/ko/projects/p1/"  # 원하는 경로로
@@ -28,7 +28,7 @@ items:
     features:
       - "소개1"
       - "소개2"
-    image: "coffee.jpg"      # static/media/coffee.jpg 에 파일 있어야 함
+    image: "pro3.jpg"      # static/media/coffee.jpg 에 파일 있어야 함
     button:
       text: "자세히보기"
       url: "/ko/projects/p1/"  # 원하는 경로로
