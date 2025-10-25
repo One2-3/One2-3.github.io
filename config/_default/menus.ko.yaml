@@ -6,6 +6,9 @@ main:
   - name: Home
     url: /ko/
     weight: 10
+  - name: 소개
+    url: /ko/about/
+    weight: 15
   - name: Features
     url: /ko/
     weight: 20
