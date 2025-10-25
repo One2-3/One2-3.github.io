@@ -7,8 +7,12 @@ main:
     url: /ko/
     weight: 10
   - name: 소개
-    url: /ko/about/
+    url: /ko/#profile_intro/
     weight: 15
+    hasChildren: true
+  - parent: 소개
+    name: 자기소개
+    url: /ko/about/
   - name: Features
     url: /ko/
     weight: 20
