@@ -61,10 +61,28 @@
    {{- $btnText := (or (index $btn "text") "") -}}
    {{- $btnURL  := (or (index $btn "url")  "") -}}
 
-   {{- $imgURL := $img -}}
-   {{- if and $img (not (or (hasPrefix $img "http://") (hasPrefix $img "https://") (hasPrefix $img "/"))) -}}
-     {{- $imgURL = (printf "/media/%s" $img) -}}
+   {{- $ctx := .page -}}  {{/* 파일 상단에 한번 선언해두면 범위 내 어디서든 사용 */}}
+
+   {{- $imgURL := "" -}}
+   {{- if $img -}}
+     {{- if or (hasPrefix $img "http://") (hasPrefix $img "https://") (hasPrefix $img "/") -}}
+       {{- $imgURL = $img -}}  {{/* 절대/외부 경로는 그대로 */}}
+     {{- else -}}
+       {{- /* 1) 현재 페이지 번들 내부에서 찾기 (home/ 같은 폴더에 둘 때) */ -}}
+       {{- $res := $ctx.Resources.GetMatch $img -}}
+       {{- if not $res -}}
+         {{- /* 2) assets/media/에서 찾기 (파이프 처리됨) */ -}}
+         {{- $res = resources.Get (printf "media/%s" $img) -}}
+       {{- end -}}
+       {{- if $res -}}
+         {{- $imgURL = $res.RelPermalink -}}
+       {{- else -}}
+         {{- /* 3) 마지막 fallback: static/media */ -}}
+         {{- $imgURL = (printf "/media/%s" $img) -}}
+       {{- end -}}
+     {{- end -}}
    {{- end -}}
+   
 
    <article class="rounded-2xl overflow-hidden border border-gray-200/20 dark:border-gray-700/40 bg-gray-50/5 dark:bg-gray-900/40">
      <div class="grid grid-cols-1 md:grid-cols-12">
