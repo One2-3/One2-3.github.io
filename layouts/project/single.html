@@ -1,11 +1,12 @@
 {{ define "main" }}
 
-{{/* 이미지 파라미터 파싱: 문자열/객체 모두 지원 */}}
+{{/* image 파라미터 파싱: 문자열/맵(maps.Params 포함) 모두 지원 */}}
 {{- $imgParam := .Params.image -}}
 {{- $name := "" -}}
 {{- if $imgParam -}}
   {{- $t := printf "%T" $imgParam -}}
-  {{- if in $t "map" -}}
+  {{- $isMap := or (in $t "map") (in $t "Params") -}}
+  {{- if $isMap -}}
     {{- $name = or (index $imgParam "filename") (index $imgParam "src") (index $imgParam "url") "" -}}
   {{- else -}}
     {{- $name = $imgParam -}}
@@ -13,14 +14,18 @@
 {{- end -}}
 
 {{- $imgRes := nil -}}
-{{- if $name -}}
-  {{- /* 1) 페이지 번들 내부 (Resources가 있을 때만) */ -}}
+{{- if and $name (ne $name "") -}}
+  {{- /* 1) 페이지 번들 (Resources가 있을 때만) */ -}}
   {{- with .Resources -}}
     {{- $imgRes = .GetMatch $name -}}
   {{- end -}}
+
   {{- /* 2) assets/media/ */ -}}
-  {{- if not $imgRes -}}{{- $imgRes = resources.Get (printf "media/%s" $name) -}}{{- end -}}
-  {{- /* 3) assets 루트에서 직접 */ -}}
+  {{- if not $imgRes -}}
+    {{- $imgRes = resources.Get (printf "media/%s" $name) -}}
+  {{- end -}}
+
+  {{- /* 3) assets 루트에서 직접 (media/...로 적은 경우) */ -}}
   {{- if and (not $imgRes) (hasPrefix $name "media/") -}}
     {{- $imgRes = resources.Get $name -}}
   {{- end -}}
@@ -36,7 +41,7 @@
 {{- $imgURL := "" -}}
 {{- if $imgRes -}}
   {{- $imgURL = $imgRes.RelPermalink -}}
-{{- else if $name -}}
+{{- else if and $name (ne $name "") -}}
   {{- if or (hasPrefix $name "http://") (hasPrefix $name "https://") (hasPrefix $name "/") -}}
     {{- $imgURL = $name -}}
   {{- else -}}
