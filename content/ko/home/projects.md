@@ -13,7 +13,7 @@ items:
     image: "pro1.jpg"     
     button:
       text: "자세히보기"
-      url: "/ko/projects/p1/"  # 원하는 경로로
+      url: "/ko/project/p1/"  # 원하는 경로로
   - title: "프로젝트2"
     text: ""
     features:
@@ -22,7 +22,7 @@ items:
     image: "pro2.jpg"    
     button:
       text: "자세히보기"
-      url: "/ko/projects/p1/"  # 원하는 경로로
+      url: "/ko/project/p1/"  # 원하는 경로로
   - title: "프로젝트3"
     text: ""
     features:
@@ -31,5 +31,5 @@ items:
     image: "pro3.jpg"      
     button:
       text: "자세히보기"
-      url: "/ko/projects/p1/"  # 원하는 경로로
+      url: "/ko/project/p1/"  # 원하는 경로로
 ---
