@@ -29,7 +29,7 @@ description: |-
   - 이름 : 박지유
   - 성별 : 여
   - 나이 : 22세(04년생)
-  - 학교 : 전북대학교
+  - 학교 : [전북대학교](https://www.jbnu.ac.kr)
   - 전공 : 컴퓨터인공지능학부
   - 메일 : qkrwldb1695@naver.com
 
