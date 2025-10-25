@@ -1,0 +1,19 @@
+{{ define "main" }}
+<section class="container mx-auto px-6 py-10">
+  <h1 class="text-3xl md:text-4xl font-bold mb-6">{{ .Title | default "프로젝트" }}</h1>
+
+  <div class="grid gap-6 md:grid-cols-2">
+    {{ range .Pages }}
+      <a href="{{ .RelPermalink }}" class="block p-5 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+        <h2 class="text-xl font-semibold mb-2">{{ .Title }}</h2>
+        {{ with .Params.period }}
+          <div class="text-sm text-gray-500 dark:text-gray-300 mb-2">기간: {{ . }}</div>
+        {{ end }}
+        <p class="text-sm text-gray-600 dark:text-gray-300">{{ .Summary }}</p>
+      </a>
+    {{ else }}
+      <p>등록된 프로젝트가 없습니다.</p>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
