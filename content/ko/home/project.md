@@ -14,4 +14,22 @@ items:
     button:
       text: "자세히보기"
       url: "/ko/projects/p1/"  # 원하는 경로로
+  - title: "프로젝트2"
+    text: ""
+    features:
+      - "소개1"
+      - "소개2"
+    image: "coffee.jpg"      # static/media/coffee.jpg 에 파일 있어야 함
+    button:
+      text: "자세히보기"
+      url: "/ko/projects/p1/"  # 원하는 경로로
+  - title: "프로젝트3"
+    text: ""
+    features:
+      - "소개1"
+      - "소개2"
+    image: "coffee.jpg"      # static/media/coffee.jpg 에 파일 있어야 함
+    button:
+      text: "자세히보기"
+      url: "/ko/projects/p1/"  # 원하는 경로로
 ---
