@@ -10,8 +10,7 @@ items:
     features:
       - "소개1"
       - "소개2"
-    image:  
-      filename: "pro1.jpg"     
+    image: "pro1.jpg"     
     button:
       text: "자세히보기"
       url: "/ko/projects/p1/"  # 원하는 경로로
@@ -20,8 +19,7 @@ items:
     features:
       - "소개1"
       - "소개2"
-    image:  
-      filename: "pro2.jpg"    
+    image: "pro2.jpg"    
     button:
       text: "자세히보기"
       url: "/ko/projects/p1/"  # 원하는 경로로
@@ -30,8 +28,7 @@ items:
     features:
       - "소개1"
       - "소개2"
-    image:  
-      filename: "pro3.jpg"      
+    image: "pro3.jpg"      
     button:
       text: "자세히보기"
       url: "/ko/projects/p1/"  # 원하는 경로로
