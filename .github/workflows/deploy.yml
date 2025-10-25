@@ -100,6 +100,26 @@ jobs:
       with:
         path: ./public
 
+    - name: Clear Hugo & Go caches
+      run: |
+        # Hugo 캐시(로그에 나온 경로)
+        rm -rf /home/runner/.cache/hugo_cache || true
+        rm -rf ~/.cache/hugo_cache || true
+        rm -rf ~/.cache/hugo || true
+
+        # Hugo 리소스 빌드 산출물
+        rm -rf resources/_gen || true
+        rm -rf public || true
+
+        # Go 컴파일/모듈 캐시 (Hugo Modules용)
+        rm -rf ~/.cache/go-build || true
+        rm -rf ~/go/pkg/mod || true
+        rm -rf "${GOMODCACHE:-}" || true
+
+        # 모듈 정리
+        hugo mod clean || true
+
+
   # Deploy website to GitHub Pages hosting
   deploy:
     if: github.repository_owner != 'HugoBlox'
