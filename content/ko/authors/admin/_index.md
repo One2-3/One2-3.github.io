@@ -44,7 +44,7 @@ socials:
     url: https://github.com/One2-3
     label: 깃허브
   - type: instagram
-    url: https://www.instagram.com/j1yu
+    url: https://www.instagram.com/j1_yu_u
     label: 인스타그램
 
   # Link to a PDF of your resume/CV - upload it to `static/uploads/resume.pdf`

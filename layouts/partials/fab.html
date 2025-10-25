@@ -1,0 +1,14 @@
+<div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+    {{ range slice
+        (dict "href" "mailto:qkrwldb1695@naver.com" "label" "메일")
+        (dict "href" "https://github.com/one2-3" "label" "GitHub")
+        (dict "href" "https://www.instagram.com/j1_yu_u" "label" "instagram")
+        (dict "href" "/uploads/resume.pdf" "label" "이력서")
+        (dict "href" "/ko/about/" "label" "소개")
+        (dict "href" "/ko/project/" "label" "프로젝트")
+    }}
+    <a href="{{ .href }}" class="rounded-full px-4 py-2 bg-primary-600 text-white shadow hover:bg-primary-700 transition"
+       aria-label="{{ .label }}">{{ .label }}</a>
+    {{ end }}
+  </div>
+  
