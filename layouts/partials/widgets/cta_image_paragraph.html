@@ -1,67 +1,85 @@
-{{/* CTA Image + Paragraph (이미지 왼쪽, 텍스트 오른쪽 고정) */}}
+{{/* CTA Image + Paragraph (이미지 왼쪽, 텍스트 오른쪽).
+  items: [...] 배열도, 단일 필드(title/text/image/features/button)도 지원. */}}
+
 {{- $w := .widget -}}
-{{- $items := ($w.Param "items") | default (slice) -}}
+
+{{/* 1) 데이터 수집: items 배열 우선, 없으면 단일 필드로 1개 아이템 생성 */}}
+{{- $items := ($w.Param "items") -}}
+{{- if not $items -}}
+{{- $btn := ($w.Param "button") | default dict -}}
+{{- $single := dict
+   "title"    (($w.Param "title")    | default "")
+   "text"     (($w.Param "text")     | default "")
+   "features" (($w.Param "features") | default (slice))
+   "image"    (($w.Param "image")    | default "")
+   "button"    (dict
+     "text" ((index $btn "text") | default "")
+     "url"  ((index $btn "url")  | default "")
+   )
+ -}}
+{{- $items = slice $single -}}
+{{- end -}}
+
 {{- $css := ( ($w.Param "design").css_class ) | default "" -}}
 
 <section class="py-12 {{ $css }}">
-  <div class="container mx-auto px-6 space-y-10">
-    {{- range $items }}
-      {{- $title := .title | default "" -}}
-      {{- $text := .text | default "" -}}
-      {{- $icon := .feature_icon | default "" -}}
-      {{- $features := .features | default (slice) -}}
-      {{- $img := .image | default "" -}}
-      {{- $btn := .button | default dict -}}
-      {{- $btnText := (index $btn "text") | default "" -}}
-      {{- $btnURL := (index $btn "url")  | default "" -}}
+<div class="container mx-auto px-6 space-y-10">
+ {{- range $items }}
+   {{- $title := .title | default "" -}}
+   {{- $text := .text | default "" -}}
+   {{- $features := .features | default (slice) -}}
+   {{- $img := .image | default "" -}}
+   {{- $btn := .button | default dict -}}
+   {{- $btnText := (index $btn "text") | default "" -}}
+   {{- $btnURL := (index $btn "url")  | default "" -}}
 
-      {{/* 이미지 경로 보정: http/https 또는 / 시작이 아니면 /media/ 붙이기 */}}
-      {{- $imgURL := $img -}}
-      {{- if and $img (not (or (hasPrefix $img "http://") (hasPrefix $img "https://") (hasPrefix $img "/"))) -}}
-        {{- $imgURL = (printf "/media/%s" $img) -}}
-      {{- end -}}
+   {{/* 2) 이미지 경로 보정: http/https 또는 / 시작이 아니면 /media/ 접두 */}}
+   {{- $imgURL := $img -}}
+   {{- if and $img (not (or (hasPrefix $img "http://") (hasPrefix $img "https://") (hasPrefix $img "/"))) -}}
+     {{- $imgURL = (printf "/media/%s" $img) -}}
+   {{- end -}}
 
-      <article class="rounded-2xl overflow-hidden bg-gray-100/5 dark:bg-gray-900/40 border border-gray-200/20 dark:border-gray-700/40">
-        <div class="grid grid-cols-1 md:grid-cols-12">
-          {{/* 왼쪽: 이미지 */}}
-          <div class="md:col-span-5">
-            {{ if $imgURL }}
-              <img src="{{ $imgURL }}" alt="{{ $title }}" class="w-full h-full object-cover md:min-h-[320px]" loading="lazy" />
-            {{ else }}
-              <div class="w-full h-full md:min-h-[320px] bg-gray-200/30 dark:bg-gray-800/50"></div>
-            {{ end }}
-          </div>
+   <article class="rounded-2xl overflow-hidden border border-gray-200/20 dark:border-gray-700/40 bg-gray-50/5 dark:bg-gray-900/40">
+     <div class="grid grid-cols-1 md:grid-cols-12">
+       {{/* 왼쪽: 이미지(없으면 플레이스홀더) */}}
+       <div class="md:col-span-5">
+         {{ if $imgURL }}
+           <img src="{{ $imgURL }}" alt="{{ $title }}" class="w-full h-full object-cover md:min-h-[280px]" loading="lazy" />
+         {{ else }}
+           <div class="w-full h-full md:min-h-[280px] bg-gray-200/30 dark:bg-gray-800/50"></div>
+         {{ end }}
+       </div>
 
-          {{/* 오른쪽: 텍스트 */}}
-          <div class="md:col-span-7 p-6 md:p-8">
-            {{ with $title }}
-              <h3 class="text-2xl md:text-3xl font-semibold mb-3">{{ . }}</h3>
-            {{ end }}
+       {{/* 오른쪽: 텍스트 */}}
+       <div class="md:col-span-7 p-6 md:p-8">
+         {{ with $title }}
+           <h3 class="text-2xl md:text-3xl font-semibold mb-3 text-gray-900 dark:text-gray-100">{{ . }}</h3>
+         {{ end }}
 
-            {{ with $text }}
-              <p class="text-gray-700 dark:text-gray-300 mb-4">{{ . }}</p>
-            {{ end }}
+         {{ with $text }}
+           <p class="mb-4 text-gray-800 dark:text-gray-200">{{ . }}</p>
+         {{ end }}
 
-            {{ if $features }}
-              <ul class="space-y-2 mb-6">
-                {{- range $feat := $features }}
-                  <li class="flex items-start gap-2">
-                    {{ if $icon }}<span class="mt-1">✔</span>{{ end }}
-                    <span class="text-gray-800 dark:text-gray-200">{{ $feat | markdownify }}</span>
-                  </li>
-                {{- end }}
-              </ul>
-            {{ end }}
+         {{ if $features }}
+           <ul class="space-y-2 mb-6">
+             {{- range $feat := $features }}
+               <li class="flex items-start gap-2">
+                 <span class="mt-1 text-gray-900 dark:text-gray-100">•</span>
+                 <span class="text-gray-900 dark:text-gray-100">{{ $feat | markdownify }}</span>
+               </li>
+             {{- end }}
+           </ul>
+         {{ end }}
 
-            {{ if and $btnText $btnURL }}
-              <a href="{{ $btnURL }}"
-                 class="inline-flex items-center px-4 py-2 rounded-xl bg-black/90 dark:bg-white/10 text-white hover:bg-black transition">
-                {{ $btnText }}
-              </a>
-            {{ end }}
-          </div>
-        </div>
-      </article>
-    {{- end }}
-  </div>
+         {{ if and $btnText $btnURL }}
+           <a href="{{ $btnURL }}"
+              class="inline-flex items-center px-4 py-2 rounded-xl bg-black text-white hover:bg-black/80 dark:bg-white/10 dark:hover:bg-white/20 transition">
+             {{ $btnText }}
+           </a>
+         {{ end }}
+       </div>
+     </div>
+   </article>
+ {{- end }}
+</div>
 </section>

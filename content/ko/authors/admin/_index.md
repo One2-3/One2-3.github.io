@@ -30,7 +30,7 @@ description: |-
   - 성별 : 여
   - 나이 : 22세(04년생)
   - 학교 : [전북대학교](https://www.jbnu.ac.kr)
-  - 전공 : 컴퓨터인공지능학부
+  - 전공 : [컴퓨터인공지능학부](https://csai.jbnu.ac.kr)
   - 메일 : qkrwldb1695@naver.com
 
 
