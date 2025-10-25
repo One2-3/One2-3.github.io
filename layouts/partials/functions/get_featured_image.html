@@ -1,5 +1,30 @@
-{{ $img := .Params.image }}
-{{ if reflect.IsMap $img }}
-  {{ $img = $img.filename }}
-{{ end }}
-{{ return $img }}
+{{/* 인자로 넘긴 페이지(. = page/item)에서 대표 이미지 Hugo Resource 반환
+    - Params.image 가 string 또는 map(filename/src/url) 모두 지원
+    - 페이지 번들/ assets(media)/ assets 직접/ 번들 첫 이미지 순으로 탐색
+*/}}
+
+{{- $p := . -}}
+{{- $src := $p.Params.image -}}
+{{- $name := "" -}}
+
+{{- if $src -}}
+ {{- if reflect.IsString $src -}}
+   {{- $name = $src -}}
+ {{- else if reflect.IsMap $src -}}
+   {{- $name = or (index $src "filename") (index $src "src") (index $src "url") "" -}}
+ {{- end -}}
+{{- end -}}
+
+{{- $res := nil -}}
+{{- if $name -}}
+ {{- $res = $p.Resources.GetMatch $name -}}
+ {{- if not $res -}}{{- $res = resources.Get (printf "media/%s" $name) -}}{{- end -}}
+ {{- if and (not $res) (hasPrefix $name "media/") -}}
+   {{- $res = resources.Get $name -}}
+ {{- end -}}
+{{- end -}}
+{{- if not $res -}}
+ {{- $res = ($p.Resources.ByType "image" | first) -}}
+{{- end -}}
+
+{{- return $res -}}

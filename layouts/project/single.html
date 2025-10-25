@@ -1,22 +1,43 @@
 {{ define "main" }}
 
-{{/* 페이지 번들 내부 이미지 결정:
-     - .Params.image 가 있으면 그 파일 우선 (같은 폴더의 리소스/정적 경로/외부 URL 모두 지원)
-     - 없으면 번들 안의 첫 이미지 리소스 선택 */}}
-{{ $imgURL := "" }}
-{{ if .Params.image }}
-  {{ $src := .Params.image }}
-  {{ if or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "/") }}
-    {{ $imgURL = $src }}
-  {{ else }}
-    {{ $res := .Resources.GetMatch $src }}
-    {{ if not $res }}{{ $res = resources.Get (printf "media/%s" $src) }}{{ end }}
-    {{ if $res }}{{ $imgURL = $res.RelPermalink }}{{ else }}{{ $imgURL = printf "/media/%s" $src }}{{ end }}
-  {{ end }}
-{{ else }}
-  {{ $first := (.Resources.ByType "image") | first }}
-  {{ if $first }}{{ $imgURL = $first.RelPermalink }}{{ end }}
-{{ end }}
+{{/* 이미지 소스 파싱: string/map 모두 지원 + Resource 우선 */}}
+{{- $src := .Params.image -}}
+{{- $name := "" -}}
+{{- if $src -}}
+  {{- if reflect.IsString $src -}}
+    {{- $name = $src -}}
+  {{- else if reflect.IsMap $src -}}
+    {{- $name = or (index $src "filename") (index $src "src") (index $src "url") "" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $imgRes := nil -}}
+{{- if $name -}}
+  {{- /* 1) 페이지 번들에서 */ -}}
+  {{- $imgRes = .Resources.GetMatch $name -}}
+  {{- /* 2) assets/media/ 에서 */ -}}
+  {{- if not $imgRes -}}{{- $imgRes = resources.Get (printf "media/%s" $name) -}}{{- end -}}
+  {{- /* 3) assets 루트에서 직접 */ -}}
+  {{- if and (not $imgRes) (hasPrefix $name "media/") -}}
+    {{- $imgRes = resources.Get $name -}}
+  {{- end -}}
+{{- end -}}
+{{- if not $imgRes -}}
+  {{- /* 4) 페이지 번들의 첫 번째 이미지 fallback */ -}}
+  {{- $imgRes = (.Resources.ByType "image" | first) -}}
+{{- end -}}
+
+{{- $imgURL := "" -}}
+{{- if $imgRes -}}
+  {{- $imgURL = $imgRes.RelPermalink -}}
+{{- else if $name -}}
+  {{- /* 마지막 fallback: static/media */ -}}
+  {{- if or (hasPrefix $name "http://") (hasPrefix $name "https://") (hasPrefix $name "/") -}}
+    {{- $imgURL = $name -}}
+  {{- else -}}
+    {{- $imgURL = printf "/media/%s" $name -}}
+  {{- end -}}
+{{- end -}}
 
 <section class="container mx-auto px-6 py-10">
   <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
