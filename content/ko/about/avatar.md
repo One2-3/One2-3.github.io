@@ -1,5 +1,5 @@
 ---
-widget: about_avatar     # ✅ 위젯 이름
+widget: about_avatar
 headless: false
 weight: 1
 title: ""
