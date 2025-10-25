@@ -13,9 +13,19 @@ main:
   - parent: 소개
     name: 자기소개
     url: /ko/about/
-  - name: Features
-    url: /ko/
+  - name: 프로젝트
+    url: /ko/#projects/
     weight: 20
+    hasChildren: true
+  - parent: 프로젝트
+    name: 프로젝트1
+    url: /ko/project/
+  - parent: 프로젝트
+    name: 프로젝트2
+    url: /ko/project/
+  - parent: 프로젝트
+    name: 프로젝트2
+    url: /ko/project/
   - name: Solutions
     url: /ko/
     weight: 30
