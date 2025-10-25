@@ -23,6 +23,6 @@ content:
       icon: star
       description: 'MongoDB를 활용한 데이터베이스 구축.'
     - name: '지속적인 학습'
-      icon: rectangle-group
+      icon: hero/outline/rectangle-group
       description: '이 외의 것들도 꾸준히 학습하려 노력.'
 ---
