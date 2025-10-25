@@ -3,9 +3,10 @@
 #   The `weight` parameter defines the order that the links will appear in.
 
 main:
-  - name: Home
+  - name: 홈
     url: /ko/
     weight: 10
+  
   - name: 소개
     weight: 15
     hasChildren: true
@@ -15,9 +16,11 @@ main:
   - parent: 소개
     name: 자기소개
     url: /ko/about/
+  
   - name: 주요 역량
     url: /ko/#features/
     weight: 20
+ 
   - name: 프로젝트
     weight: 30
     hasChildren: true
@@ -33,6 +36,7 @@ main:
   - parent: 프로젝트
     name: 프로젝트3
     url: project/p3
+  
   - name: 연락처
     url: /ko/contact/
     weight: 40

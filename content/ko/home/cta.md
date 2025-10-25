@@ -4,11 +4,11 @@ headless: true
 weight: 6
 
 content:
-  title: 'Build your future-proof website'
-  text: 'As easy as 1, 2, 3!'
+  title: '꾸준히 노력하는 개발자'
+  text: '협업을 제안해보세요'
   button:
-    text: 'Get Started'
-    url: 'https://hugoblox.com/templates/'
+    text: '제안하기'
+    url: 'ko/contact'
 
 design:
   card:
