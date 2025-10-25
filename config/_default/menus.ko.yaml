@@ -26,16 +26,16 @@ main:
     hasChildren: true
   - parent: 프로젝트
     name: 프로젝트 소개
-    url: project/#projects/
+    url: /#projects
   - parent: 프로젝트
     name: 프로젝트1
-    url: project/p1
+    url: project/p1/
   - parent: 프로젝트
     name: 프로젝트2
-    url: project/p2
+    url: project/p2/
   - parent: 프로젝트
     name: 프로젝트3
-    url: project/p3
+    url: project/p3/
   
   - name: 연락처
     url: /ko/contact/
