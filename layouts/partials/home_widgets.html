@@ -1,12 +1,8 @@
-{{- $lang := .Lang | default "ko" -}}
-
-{{/* ✔ 섹션명 계산: 홈이면 'home', 아니면 현재 섹션(.Section),
-      그리고 비어있으면 최종적으로 'home'로 안전하게 처리 */}}
-{{- $sectionName := .Section -}}
-{{- if .IsHome -}}
-  {{- $sectionName = "home" -}}
-{{- end -}}
-{{- if not $sectionName -}}
+{{/* 언어와 섹션 안정적으로 계산하기 */}}
+{{- $parts := split .RelPermalink "/" -}}        {{/* ["", "ko", "about", ""] 형태 */}}
+{{- $lang := (index $parts 1) | default "ko" -}}
+{{- $sectionName := (index $parts 2) -}}
+{{- if or .IsHome (not $sectionName) -}}
   {{- $sectionName = "home" -}}
 {{- end -}}
 
@@ -18,10 +14,21 @@
       content/{{ $lang }}/{{ $sectionName }}/index.md 를 찾을 수 없습니다.
     </div>
   {{- else -}}
-    {{- $all := $sec.Resources.Match "**.md" | default (slice) -}}
+    {{/* 브랜치 섹션(_index.md)은 .Pages, 리프 번들(index.md)은 .Resources 사용 */}}
+    {{- $all := slice -}}
+    {{- if $sec.IsBranch -}}
+      {{- $all = $sec.Pages -}}
+    {{- else -}}
+      {{- $all = ($sec.Resources.Match "**.md") | default (slice) -}}
+    {{- end -}}
+
+    {{/* index 제외 + widget 파라미터가 있는 파일만 필터 */}}
     {{- $widgets := where (where $all "File.BaseFileName" "!=" "index") "Params.widget" "!=" nil | default (slice) -}}
+
     {{- if eq (len $widgets) 0 -}}
-      <div class="text-red-600 py-12">{{ $sectionName }} 폴더에 위젯(.md) 파일이 없습니다.</div>
+      <div class="text-amber-600 py-12">
+        {{ $sectionName }} 폴더에 위젯(.md) 파일이 없습니다.
+      </div>
     {{- else -}}
       {{- $sorted := sort $widgets "Params.weight" "asc" -}}
       {{- range $p := $sorted -}}
