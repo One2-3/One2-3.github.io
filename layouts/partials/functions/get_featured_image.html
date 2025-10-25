@@ -1,35 +1,30 @@
 {{/*
-    Featured image resolver (초-보수 버전)
-    - 오직 페이지 번들(.Resources) 안에서만 대표 이미지 탐색
-    - .Params.image: "pro1.jpg" 또는 {filename/src/url: "..."} 모두 처리
-    - 글로벌 resources.Get 호출을 전부 제거 → "nil is not a command" 회피
+    Featured image resolver (초미니 안정판)
+    - 오직 "페이지 번들(.Resources)" 안에서 Params.image로 지정한 파일명만 매칭
+    - .Params.image: "pro1.jpg" 또는 {filename/src/url: "..."} 모두에서 "파일명"만 추출하여 GetMatch
+    - assets/media 탐색/첫 이미지 자동 선택 등은 모두 제거 (안정성 우선)
     - 반환: Hugo Resource (없으면 nil)
   */}}
   
   {{- $p := . -}}
   {{- $imgParam := $p.Params.image -}}
   
-  {{/* 1) 이미지 파일명만 추출 (URL/절대경로는 여기선 미처리) */}}
+  {{/* 1) 파일명만 추출 */}}
   {{- $name := "" -}}
   {{- if $imgParam -}}
     {{- $t := printf "%T" $imgParam -}}
-    {{- $isMap := or (in $t "map") (in $t "Params") -}}
-    {{- if $isMap -}}
-      {{- /* filename/src/url 중 filename 우선. URL/절대경로는 번들 탐색 대상이 아님 */ -}}
+    {{- if or (in $t "map") (in $t "Params") -}}
       {{- $name = or (index $imgParam "filename") (index $imgParam "src") (index $imgParam "url") "" -}}
     {{- else -}}
       {{- $name = $imgParam -}}
     {{- end -}}
   {{- end -}}
   
-  {{/* 2) 번들 내부에서만 탐색 (외부/정적 경로는 호출하지 않음) */}}
+  {{/* 2) 번들 내부에서만 탐색 (안전: 메서드는 with 블록 안에서만 호출) */}}
   {{- $res := nil -}}
-  {{- with $p.Resources -}}
-    {{- if and $name (ne $name "") -}}
+  {{- if and $name (ne $name "") -}}
+    {{- with $p.Resources -}}
       {{- $res = .GetMatch $name -}}
-    {{- end -}}
-    {{- if not $res -}}
-      {{- $res = ( .ByType "image" | first ) -}}
     {{- end -}}
   {{- end -}}
   
