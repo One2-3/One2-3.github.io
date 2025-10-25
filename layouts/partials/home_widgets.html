@@ -1,19 +1,26 @@
-{{/* 언어와 섹션 안정적으로 계산하기 */}}
-{{- $parts := split .RelPermalink "/" -}}        {{/* ["", "ko", "about", ""] 형태 */}}
-{{- $lang := (index $parts 1) | default "ko" -}}
-{{- $sectionName := (index $parts 2) -}}
-{{- if or .IsHome (not $sectionName) -}}
-  {{- $sectionName = "home" -}}
+{{/* 현재 콘텍스트에서 섹션 페이지($sec) 안전하게 얻기 */}}
+{{- $sec := . -}}
+
+{{- if .IsHome -}}
+  {{- /* 홈: content/<lang>/home/index.md (leaf bundle) */ -}}
+  {{- $sec = site.GetPage (printf "/%s/home" .Lang) -}}
+{{- else -}}
+  {{- /* 섹션 페이지(about/_index.md 등)라면 그대로 사용, 일반 콘텐츠면 상위 섹션으로 */ -}}
+  {{- if eq .Kind "section" -}}
+    {{- $sec = . -}}
+  {{- else -}}
+    {{- $sec = .CurrentSection -}}
+  {{- end -}}
 {{- end -}}
 
-{{- $sec := site.GetPage (printf "/%s/%s" $lang $sectionName) -}}
-
 <section class="container mx-auto px-6">
+
   {{- if not $sec -}}
     <div class="text-red-600 py-12">
-      content/{{ $lang }}/{{ $sectionName }}/index.md 를 찾을 수 없습니다.
+      위젯 섹션을 찾을 수 없습니다. (현재 페이지 기준 섹션 탐색 실패)
     </div>
   {{- else -}}
+
     {{/* 브랜치 섹션(_index.md)은 .Pages, 리프 번들(index.md)은 .Resources 사용 */}}
     {{- $all := slice -}}
     {{- if $sec.IsBranch -}}
@@ -22,12 +29,12 @@
       {{- $all = ($sec.Resources.Match "**.md") | default (slice) -}}
     {{- end -}}
 
-    {{/* index 제외 + widget 파라미터가 있는 파일만 필터 */}}
+    {{/* index 제외 + widget 파라미터가 있는 파일만 */}}
     {{- $widgets := where (where $all "File.BaseFileName" "!=" "index") "Params.widget" "!=" nil | default (slice) -}}
 
     {{- if eq (len $widgets) 0 -}}
       <div class="text-amber-600 py-12">
-        {{ $sectionName }} 폴더에 위젯(.md) 파일이 없습니다.
+        이 섹션에 렌더할 위젯(.md)이 없습니다.
       </div>
     {{- else -}}
       {{- $sorted := sort $widgets "Params.weight" "asc" -}}
@@ -42,5 +49,6 @@
         {{- end -}}
       {{- end -}}
     {{- end -}}
+
   {{- end -}}
 </section>
