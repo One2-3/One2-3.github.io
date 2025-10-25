@@ -4,8 +4,8 @@ headless: true
 weight: 4
 
 content:
-  title: 'Features'
-  text: 'Build your site with blocks 🧱'
+  title: '관심사'
+  text: '지금 저의 관심사 입니다'
   items:
     - name: 'Optimized SEO'
       icon: magnifying-glass
