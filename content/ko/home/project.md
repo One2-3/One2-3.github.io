@@ -1,18 +1,17 @@
 ---
-widget: cta_image_paragraph
-headless: true
+widget: cta_image_paragraph   # 또는 cta-image-paragraph (로더에서 -→_ 처리하면 어느 쪽이든 OK)
+headless: false               # ← 페이지에 표시하려면 false
 weight: 5
 
-content:
-    title: 프로젝트
-    items:
-      - title: 프로젝트1
-        text: ''
-        features:
-         - '소개1'
-         - '소개2'
-        image: "coffee.jpg" #assets/media/
-        button:
-            text: 자세히보기
-            url: #경로 
+title: "프로젝트"              # 섹션 타이틀 (선택)
+items:
+  - title: "프로젝트1"
+    text: ""
+    features:
+      - "소개1"
+      - "소개2"
+    image: "coffee.jpg"      # static/media/coffee.jpg 에 파일 있어야 함
+    button:
+      text: "자세히보기"
+      url: "/ko/projects/p1/"  # 원하는 경로로
 ---
