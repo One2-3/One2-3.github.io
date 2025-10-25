@@ -1,0 +1,33 @@
+{{/* 
+    Usage: {{ partial "icon.html" (dict "name" "hero/outline/star" "class" "h-6 w-6") }}
+    Supports:
+      - hero/outline/<name>
+      - hero/solid/<name>
+      - brands/<name>
+      - academicons/<name>
+      - plain "<name>" → defaults to hero/outline/<name>
+  */}}
+  
+  {{- $name := .name | default "" -}}
+  {{- $class := .class | default "h-6 w-6" -}}
+  {{- $svg := nil -}}
+  
+  {{- if not $name -}}
+    <span class="{{ $class }}" aria-hidden="true">⬜</span>
+  {{- else -}}
+    {{- if or (hasPrefix $name "hero/") (hasPrefix $name "brands/") (hasPrefix $name "academicons/") -}}
+      {{- $svg = resources.Get (printf "media/icons/%s.svg" $name) -}}
+    {{- else -}}
+      {{/* No prefix → assume hero/outline */}}
+      {{- $svg = resources.Get (printf "media/icons/hero/outline/%s.svg" $name) -}}
+    {{- end -}}
+  
+    {{- if $svg -}}
+      <span class="{{ $class }} inline-block align-middle" aria-hidden="true">
+        {{ $svg.Content | safeHTML }}
+      </span>
+    {{- else -}}
+      <span class="{{ $class }}" aria-hidden="true">⬜</span>
+    {{- end -}}
+  {{- end -}}
+  

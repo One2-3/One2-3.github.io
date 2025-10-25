@@ -4,25 +4,25 @@ headless: true
 weight: 4
 
 content:
-  title: '관심사'
-  text: '지금 저의 관심사 입니다'
+  title: '주요 역량'
+  text: '풀스택 개발자를 목표로 공부중입니다.'
   items:
-    - name: 'Optimized SEO'
-      icon: magnifying-glass
-      description: 'Automatic sitemaps, RSS feeds, and rich metadata.'
-    - name: 'Fast'
-      icon: bolt
-      description: 'Tailwind 기반 빠른 로딩.'
-    - name: 'Easy'
+    - name: '백엔드'
+      icon: book
+      description: 'nodejs, Spring 등을 활용해 백엔드 개발'
+    - name: '프론트엔드'
+      icon: microphone
+      description: 'Flutter, React 등을 활용해 프론트엔드 개발'
+    - name: '게임'
       icon: sparkles
-      description: 'GitHub Pages로 원클릭 배포.'
-    - name: 'No-Code'
+      description: 'Unity, Unreal Engin을 활용한 게임 개발'
+    - name: '클라우드'
       icon: code-bracket
-      description: 'Markdown + YAML로 구성.'
-    - name: 'Highly Rated'
+      description: 'AWS를 통한 클라우드 구축.'
+    - name: '데이터베이스'
       icon: star
-      description: '커뮤니티 5-스타.'
-    - name: 'Swappable Blocks'
+      description: 'MongoDB를 활용한 데이터베이스 구축.'
+    - name: '지속적인 학습'
       icon: rectangle-group
-      description: '블록을 바꿔 끼우듯 페이지 빌드.'
+      description: '이 외의 것들도 꾸준히 학습하려 노력.'
 ---
