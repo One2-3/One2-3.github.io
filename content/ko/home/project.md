@@ -11,7 +11,7 @@ content:
         features:
          - '소개1'
          - '소개2'
-        image: 'coffee.jpg' #assets/media/
+        image: "coffee.jpg" #assets/media/
         button:
             text: 자세히보기
             url: #경로 
