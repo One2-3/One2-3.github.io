@@ -41,10 +41,10 @@ socials:
     url: 'mailto:qkrwldb1695@naver.com'
     label: 이메일
   - type: github
-    url: https://x.com/BuildLore
+    url: https://github.com/One2-3
     label: 깃허브
   - type: instagram
-    url: https://www.instagram.com/
+    url: https://www.instagram.com/j1yu
     label: 인스타그램
 
   # Link to a PDF of your resume/CV - upload it to `static/uploads/resume.pdf`
