@@ -1,11 +1,8 @@
-{{/* 현재 콘텍스트에서 섹션 페이지($sec) 안전하게 얻기 */}}
+{{/* 현재 페이지 기준으로 섹션($sec) 안전하게 얻기 */}}
 {{- $sec := . -}}
-
 {{- if .IsHome -}}
-  {{- /* 홈: content/<lang>/home/index.md (leaf bundle) */ -}}
   {{- $sec = site.GetPage (printf "/%s/home" .Lang) -}}
 {{- else -}}
-  {{- /* 섹션 페이지(about/_index.md 등)라면 그대로 사용, 일반 콘텐츠면 상위 섹션으로 */ -}}
   {{- if eq .Kind "section" -}}
     {{- $sec = . -}}
   {{- else -}}
@@ -14,28 +11,24 @@
 {{- end -}}
 
 <section class="container mx-auto px-6">
-
   {{- if not $sec -}}
-    <div class="text-red-600 py-12">
-      위젯 섹션을 찾을 수 없습니다. (현재 페이지 기준 섹션 탐색 실패)
-    </div>
+    <div class="text-red-600 py-12">위젯 섹션을 찾을 수 없습니다.</div>
   {{- else -}}
 
-    {{/* 브랜치 섹션(_index.md)은 .Pages, 리프 번들(index.md)은 .Resources 사용 */}}
+    {{/* 브랜치/리프 판별: IsBranch 대신 BundleType 사용 */}}
     {{- $all := slice -}}
-    {{- if $sec.IsBranch -}}
+    {{- $bundle := $sec.BundleType | default "" -}}
+    {{- if eq $bundle "branch" -}}
       {{- $all = $sec.Pages -}}
     {{- else -}}
       {{- $all = ($sec.Resources.Match "**.md") | default (slice) -}}
     {{- end -}}
 
-    {{/* index 제외 + widget 파라미터가 있는 파일만 */}}
+    {{/* index 제외 + widget 파라미터 있는 파일만 */}}
     {{- $widgets := where (where $all "File.BaseFileName" "!=" "index") "Params.widget" "!=" nil | default (slice) -}}
 
     {{- if eq (len $widgets) 0 -}}
-      <div class="text-amber-600 py-12">
-        이 섹션에 렌더할 위젯(.md)이 없습니다.
-      </div>
+      <div class="text-amber-600 py-12">이 섹션에 위젯(.md)이 없습니다.</div>
     {{- else -}}
       {{- $sorted := sort $widgets "Params.weight" "asc" -}}
       {{- range $p := $sorted -}}
