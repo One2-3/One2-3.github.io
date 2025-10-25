@@ -1,7 +1,7 @@
 ---
 widget: cta.image_paragraph
 headless: true
-weight: 4
+weight: 5
 
 content:
   items:

@@ -1,7 +1,7 @@
 ---
 widget: features
 headless: true
-weight: 3
+weight: 4
 
 content:
   title: 'Features'

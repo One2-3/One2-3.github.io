@@ -1,7 +1,7 @@
 ---
 widget: testimonials
 headless: true
-weight: 5
+weight: 6
 
 content:
   title: ''

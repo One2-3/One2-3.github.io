@@ -8,5 +8,4 @@ content:
   textRef: authors/admin
   resume_url: "/uploads/resume.pdf"    
   resume_text: "이력서 다운로드"     
-  center_intro: "꾸준히 배우고 만드는 개발자가 되는 것이 목표입니다."
 ---
