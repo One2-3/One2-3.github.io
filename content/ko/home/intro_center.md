@@ -1,5 +1,5 @@
 ---
-block: markdown       
+weiget: markdown       
 headless: true
 weight: 3             
 design:
