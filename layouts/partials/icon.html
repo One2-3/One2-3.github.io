@@ -15,11 +15,22 @@
   {{- if not $name -}}
     <span class="{{ $class }}" aria-hidden="true">⬜</span>
   {{- else -}}
-    {{- if or (hasPrefix $name "hero/") (hasPrefix $name "brands/") (hasPrefix $name "academicons/") -}}
-      {{- $svg = resources.Get (printf "media/icons/%s.svg" $name) -}}
-    {{- else -}}
-      {{/* No prefix → assume hero/outline */}}
-      {{- $svg = resources.Get (printf "media/icons/hero/outline/%s.svg" $name) -}}
+    {{- $norm := $name -}}
+    {{- if not (or (hasPrefix $norm "hero/") (hasPrefix $norm "brands/") (hasPrefix $norm "academicons/")) -}}
+      {{- $norm = printf "hero/outline/%s" $norm -}}
+    {{- end -}}
+  
+    {{/* 1) 로컬 자산 우선 */}}
+    {{- $svg = resources.Get (printf "media/icons/%s.svg" $norm) -}}
+  
+    {{/* 2) 모듈 자산에서도 다시 시도 (로컬에 없을 때) */}}
+    {{- if not $svg -}}
+      {{- range site.Assets -}}
+        {{- $try := .Get (printf "media/icons/%s.svg" $norm) -}}
+        {{- if and (not $svg) $try -}}
+          {{- $svg = $try -}}
+        {{- end -}}
+      {{- end -}}
     {{- end -}}
   
     {{- if $svg -}}
@@ -27,6 +38,7 @@
         {{ $svg.Content | safeHTML }}
       </span>
     {{- else -}}
+      {{/* 찾지 못하면 가시적으로 보이게 네모 fallback */}}
       <span class="{{ $class }}" aria-hidden="true">⬜</span>
     {{- end -}}
   {{- end -}}

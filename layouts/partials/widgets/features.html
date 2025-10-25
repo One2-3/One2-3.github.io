@@ -1,23 +1,36 @@
-{{- $p := .widget -}} {{- $params := $p.Params -}} {{- $c := (index $params
-"content" | default dict) -}} {{- $id := (index $params "id" | default
-"features") -}} {{- $items := (index $c "items" | default (slice)) -}}
-
-<section id="{{ $id }}" class="py-16">
-  {{ with (index $c "title") }}
-  <h2 class="text-3xl font-semibold mb-2">{{ . }}</h2>
-  {{ end }} {{ with (index $c "text") }}
-  <p class="opacity-80 mb-8">{{ . }}</p>
+{{/* Features widget override to ensure icons render via our icon partial */}}
+{{- $p := .widget -}}
+<section class="container mx-auto px-6 py-10">
+  {{ with $p.Params.content.title }}
+    <h2 class="text-2xl md:text-3xl font-bold mb-3">{{ . }}</h2>
+  {{ end }}
+  {{ with $p.Params.content.text }}
+    <p class="text-gray-600 dark:text-gray-300 mb-8">{{ . }}</p>
   {{ end }}
 
-  <div class="grid md:grid-cols-3 gap-6">
-    {{- range $it := $items -}}
-    <div class="rounded-2xl p-6 shadow bg-white/60 dark:bg-white/5">
-      {{ with (index $it "name") }}
-      <h3 class="font-semibold mb-2">{{ . }}</h3>
-      {{ end }} {{ with (index $it "description") }}
-      <p class="opacity-80">{{ . }}</p>
-      {{ end }}
+  {{- $items := $p.Params.content.items | default (slice) -}}
+  {{- if gt (len $items) 0 -}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {{- range $it := $items -}}
+        <div class="rounded-2xl border border-gray-200 dark:border-gray-800 p-5 hover:shadow-sm transition">
+          <div class="flex items-start gap-3">
+            <div class="shrink-0">
+              {{/* 아이콘 이름이 없으면 hero/outline/star 사용 */}}
+              {{- $icon := $it.icon | default "hero/outline/star" -}}
+              {{/* prefix 없으면 icon.html에서 hero/outline로 보정됨 */}}
+              {{ partial "icon.html" (dict "name" $icon "class" "h-7 w-7 text-gray-700 dark:text-gray-200") }}
+            </div>
+            <div>
+              <div class="font-semibold mb-1">{{ $it.name }}</div>
+              {{ with $it.description }}
+                <p class="text-sm text-gray-600 dark:text-gray-300">{{ . }}</p>
+              {{ end }}
+            </div>
+          </div>
+        </div>
+      {{- end -}}
     </div>
-    {{- end -}}
-  </div>
+  {{- else -}}
+    <div class="text-amber-600">항목이 비어 있습니다.</div>
+  {{- end -}}
 </section>
