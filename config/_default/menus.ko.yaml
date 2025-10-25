@@ -19,7 +19,7 @@ main:
     hasChildren: true
   - parent: 프로젝트
     name: 프로젝트1
-    url: roject/p1
+    url: project/p1
   - parent: 프로젝트
     name: 프로젝트2
     url: project/p2
