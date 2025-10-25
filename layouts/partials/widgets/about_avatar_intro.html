@@ -1,6 +1,7 @@
 {{- /* Renders widget: about.avatar_intro
   content.avatarRef: ex) authors/admin
   content.textRef:   ex) authors/admin or home/intro
+  content.center_intro: (string, optional) 가운데 자기소개 텍스트
 */ -}}
 
 {{- $widget := .widget -}}
@@ -77,7 +78,7 @@
 {{- end -}}
 {{- end -}}
 
-{{- /* 소셜: avatarRef 우선 → content.socials/github/instagram/linkedin/email */ -}}
+{{- /* 소셜: avatarRef 우선 → content.socials/... */ -}}
 {{- $socials := slice -}}
 {{- with $avatarPage -}}
 {{- if .Params.socials -}}
@@ -99,10 +100,20 @@
 {{- end -}}
 {{- end -}}
 
+{{- /* 가운데 자기소개: 위젯 content.center_intro 우선 → text/author Params */ -}}
+{{- $centerIntro := (index $c "center_intro") -}}
+{{- if and (not $centerIntro) $textPage -}}
+{{- $centerIntro = (or ($textPage.Params.center_intro) ($textPage.Params.tagline) ($textPage.Params.summary)) -}}
+{{- end -}}
+{{- if and (not $centerIntro) $avatarPage -}}
+{{- $centerIntro = (or ($avatarPage.Params.center_intro) ($avatarPage.Params.tagline) ($avatarPage.Params.summary)) -}}
+{{- end -}}
+
 <section class="py-16">
-<!-- 오른쪽으로 약간 이동: 전체 컨테이너에 좌측 패딩 추가 -->
+<!-- 오른쪽으로 약간 이동 -->
 <div class="max-w-5xl mx-auto px-6 md:pl-12">
- <!-- 사진/텍스트 간격 넓힘: gap-12/16 -->
+
+ <!-- 상단 2-컬럼: 사진/텍스트 간격 넓힘 -->
  <div class="grid md:grid-cols-[240px_1fr] gap-12 xl:gap-16 items-start">
 
    <!-- 왼쪽: 아바타 + 아이콘들 -->
@@ -162,5 +173,15 @@
    </div>
 
  </div>
+
+ <!-- 가운데 자기소개 (옵션) -->
+ {{- with $centerIntro -}}
+   <div class="mt-10 text-center">
+     <div class="mx-auto max-w-3xl text-lg leading-relaxed">
+       {{ . | markdownify }}
+     </div>
+   </div>
+ {{- end -}}
+
 </div>
 </section>

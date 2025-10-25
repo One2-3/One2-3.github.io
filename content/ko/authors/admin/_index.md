@@ -46,6 +46,7 @@ socials:
   - type: instagram
     url: https://www.instagram.com/
     label: 인스타그램
+
   # Link to a PDF of your resume/CV - upload it to `static/uploads/resume.pdf`
 #  - type: academicons/cv
 #    url: uploads/resume.pdf
