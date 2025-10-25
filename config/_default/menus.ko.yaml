@@ -33,9 +33,6 @@ main:
   - parent: 프로젝트
     name: 프로젝트3
     url: project/p3
-  - name: Resources
+  - name: 연락처
+    url: /ko/contact/
     weight: 40
-    hasChildren: true
-  - parent: Resources
-    name: Blog
-    url: /ko/blog/
