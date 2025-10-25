@@ -1,6 +1,9 @@
-{{/* 현재 페이지 기준으로 섹션($sec) 안전하게 얻기 */}}
+{{/* layouts/partials/home_widgets.html */}}
+
+{{- /* 1) 현재 섹션($sec) 안정적으로 얻기 */ -}}
 {{- $sec := . -}}
 {{- if .IsHome -}}
+  {{- /* 홈: content/<lang>/home/index.md (leaf bundle) */ -}}
   {{- $sec = site.GetPage (printf "/%s/home" .Lang) -}}
 {{- else -}}
   {{- if eq .Kind "section" -}}
@@ -15,16 +18,20 @@
     <div class="text-red-600 py-12">위젯 섹션을 찾을 수 없습니다.</div>
   {{- else -}}
 
-    {{/* 브랜치/리프 판별: IsBranch 대신 BundleType 사용 */}}
+    {{- /* 2) 섹션/번들 유형별로 자식 MD 수집 */ -}}
     {{- $all := slice -}}
-    {{- $bundle := $sec.BundleType | default "" -}}
-    {{- if eq $bundle "branch" -}}
+    {{- if eq $sec.Kind "section" -}}
+      {{- /* 섹션(_index.md) → children은 .Pages */ -}}
+      {{- $all = $sec.Pages -}}
+    {{- else if eq ($sec.BundleType | default "") "branch" -}}
+      {{- /* branch 번들도 .Pages */ -}}
       {{- $all = $sec.Pages -}}
     {{- else -}}
+      {{- /* leaf 번들(index.md) → children은 .Resources */ -}}
       {{- $all = ($sec.Resources.Match "**.md") | default (slice) -}}
     {{- end -}}
 
-    {{/* index 제외 + widget 파라미터 있는 파일만 */}}
+    {{- /* 3) index 제외 + widget 파라미터 있는 파일만 */ -}}
     {{- $widgets := where (where $all "File.BaseFileName" "!=" "index") "Params.widget" "!=" nil | default (slice) -}}
 
     {{- if eq (len $widgets) 0 -}}
