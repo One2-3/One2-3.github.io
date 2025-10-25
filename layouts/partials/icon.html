@@ -1,4 +1,4 @@
-{{/* 
+{{/*
     Usage: {{ partial "icon.html" (dict "name" "hero/outline/star" "class" "h-6 w-6") }}
     Supports:
       - hero/outline/<name>
@@ -10,7 +10,6 @@
   
   {{- $name := .name | default "" -}}
   {{- $class := .class | default "h-6 w-6" -}}
-  {{- $svg := nil -}}
   
   {{- if not $name -}}
     <span class="{{ $class }}" aria-hidden="true">⬜</span>
@@ -20,17 +19,11 @@
       {{- $norm = printf "hero/outline/%s" $norm -}}
     {{- end -}}
   
-    {{/* 1) 로컬 자산 우선 */}}
-    {{- $svg = resources.Get (printf "media/icons/%s.svg" $norm) -}}
-  
-    {{/* 2) 모듈 자산에서도 다시 시도 (로컬에 없을 때) */}}
+    {{/* 테마/모듈 자산은 resources.Get 이 알아서 모듈 mount까지 조회합니다. */}}
+    {{- $svg := resources.Get (printf "media/icons/%s.svg" $norm) -}}
     {{- if not $svg -}}
-      {{- range site.Assets -}}
-        {{- $try := .Get (printf "media/icons/%s.svg" $norm) -}}
-        {{- if and (not $svg) $try -}}
-          {{- $svg = $try -}}
-        {{- end -}}
-      {{- end -}}
+      {{/* 혹시 다른 테마 변형을 대비한 보조 경로 */}}
+      {{- $svg = resources.Get (printf "icons/%s.svg" $norm) -}}
     {{- end -}}
   
     {{- if $svg -}}
@@ -38,7 +31,6 @@
         {{ $svg.Content | safeHTML }}
       </span>
     {{- else -}}
-      {{/* 찾지 못하면 가시적으로 보이게 네모 fallback */}}
       <span class="{{ $class }}" aria-hidden="true">⬜</span>
     {{- end -}}
   {{- end -}}
