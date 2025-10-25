@@ -1,5 +1,5 @@
 ---
-widget: cta-image-paragraph
+widget: cta_image_paragraph
 headless: true
 weight: 5
 
