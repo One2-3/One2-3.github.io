@@ -1,0 +1,2 @@
+{{- $hover := resources.Get "js/menu-hover-only.js" | resources.Minify | resources.Fingerprint -}}
+<script src="{{ $hover.RelPermalink }}" defer></script>
