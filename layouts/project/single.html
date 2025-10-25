@@ -1,29 +1,26 @@
 {{ define "main" }}
 
-{{/* 이미지 소스 파싱: string/map 모두 지원 + Resource 우선 */}}
-{{- $src := .Params.image -}}
+{{/* 이미지 파라미터 파싱 (reflect 미사용) */}}
+{{- $imgParam := .Params.image -}}
 {{- $name := "" -}}
-{{- if $src -}}
-  {{- if reflect.IsString $src -}}
-    {{- $name = $src -}}
-  {{- else if reflect.IsMap $src -}}
-    {{- $name = or (index $src "filename") (index $src "src") (index $src "url") "" -}}
+{{- if $imgParam -}}
+  {{- $t := printf "%T" $imgParam -}}
+  {{- if in $t "map" -}}
+    {{- $name = or (index $imgParam "filename") (index $imgParam "src") (index $imgParam "url") "" -}}
+  {{- else -}}
+    {{- $name = $imgParam -}}
   {{- end -}}
 {{- end -}}
 
 {{- $imgRes := nil -}}
 {{- if $name -}}
-  {{- /* 1) 페이지 번들에서 */ -}}
   {{- $imgRes = .Resources.GetMatch $name -}}
-  {{- /* 2) assets/media/ 에서 */ -}}
   {{- if not $imgRes -}}{{- $imgRes = resources.Get (printf "media/%s" $name) -}}{{- end -}}
-  {{- /* 3) assets 루트에서 직접 */ -}}
   {{- if and (not $imgRes) (hasPrefix $name "media/") -}}
     {{- $imgRes = resources.Get $name -}}
   {{- end -}}
 {{- end -}}
 {{- if not $imgRes -}}
-  {{- /* 4) 페이지 번들의 첫 번째 이미지 fallback */ -}}
   {{- $imgRes = (.Resources.ByType "image" | first) -}}
 {{- end -}}
 
@@ -31,7 +28,6 @@
 {{- if $imgRes -}}
   {{- $imgURL = $imgRes.RelPermalink -}}
 {{- else if $name -}}
-  {{- /* 마지막 fallback: static/media */ -}}
   {{- if or (hasPrefix $name "http://") (hasPrefix $name "https://") (hasPrefix $name "/") -}}
     {{- $imgURL = $name -}}
   {{- else -}}
@@ -41,7 +37,6 @@
 
 <section class="container mx-auto px-6 py-10">
   <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-    <!-- 왼쪽: 이미지 -->
     <div class="md:col-span-5">
       {{ if $imgURL }}
         <img src="{{ $imgURL }}" alt="{{ .Title }}" class="w-full h-auto rounded-xl shadow object-cover" />
@@ -50,18 +45,15 @@
       {{ end }}
     </div>
 
-    <!-- 오른쪽: 설명 -->
     <div class="md:col-span-7">
       <h1 class="text-3xl md:text-4xl font-bold mb-3">{{ .Title }}</h1>
 
-      <!-- 메타(선택) -->
       <div class="text-sm text-gray-600 dark:text-gray-300 mb-5 space-x-3">
         {{ with .Params.period }}<span>기간: {{ . }}</span>{{ end }}
         {{ with .Params.role }}<span>역할: {{ . }}</span>{{ end }}
         {{ with .Params.stack }}<span>스택: {{ delimit . ", " }}</span>{{ end }}
       </div>
 
-      <!-- 버튼(선택) -->
       <div class="flex flex-wrap gap-3 mb-6">
         {{ with .Params.repo }}
           <a href="{{ . }}" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">GitHub</a>
@@ -71,7 +63,6 @@
         {{ end }}
       </div>
 
-      <!-- 본문 -->
       <div class="prose dark:prose-invert max-w-none">
         {{ .Content }}
       </div>
