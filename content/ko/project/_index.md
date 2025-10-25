@@ -1,5 +1,4 @@
 ---
 title: "프로젝트"
-type: project
-draft: false
+type: widget_page
 ---
