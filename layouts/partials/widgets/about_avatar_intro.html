@@ -2,6 +2,8 @@
   content.avatarRef: ex) authors/admin
   content.textRef:   ex) authors/admin or home/intro
   content.center_intro: (string, optional) 가운데 자기소개 텍스트
+  content.resume_url:  (string, optional) 이력서 파일 URL (예: "/uploads/resume.pdf")
+  content.resume_text: (string, optional) 버튼 라벨 (기본값: "이력서 다운로드")
 */ -}}
 
 {{- $widget := .widget -}}
@@ -100,7 +102,7 @@
 {{- end -}}
 {{- end -}}
 
-{{- /* 가운데 자기소개: 위젯 content.center_intro 우선 → text/author Params */ -}}
+{{- /* 가운데 자기소개: content.center_intro → textPage → avatarPage */ -}}
 {{- $centerIntro := (index $c "center_intro") -}}
 {{- if and (not $centerIntro) $textPage -}}
 {{- $centerIntro = (or ($textPage.Params.center_intro) ($textPage.Params.tagline) ($textPage.Params.summary)) -}}
@@ -109,11 +111,18 @@
 {{- $centerIntro = (or ($avatarPage.Params.center_intro) ($avatarPage.Params.tagline) ($avatarPage.Params.summary)) -}}
 {{- end -}}
 
-<section class="py-16">
-<!-- 오른쪽으로 약간 이동 -->
-<div class="max-w-5xl mx-auto px-6 md:pl-12">
+{{- /* 이력서 버튼: content.resume_url 우선 → textPage/author의 resume/resume_url/cv/cv_url */ -}}
+{{- $resumeURL := (index $c "resume_url") -}}
+{{- if and (not $resumeURL) $textPage -}}
+{{- $resumeURL = (or ($textPage.Params.resume_url) ($textPage.Params.resume) ($textPage.Params.cv_url) ($textPage.Params.cv)) -}}
+{{- end -}}
+{{- if and (not $resumeURL) $avatarPage -}}
+{{- $resumeURL = (or ($avatarPage.Params.resume_url) ($avatarPage.Params.resume) ($avatarPage.Params.cv_url) ($avatarPage.Params.cv)) -}}
+{{- end -}}
+{{- $resumeText := (index $c "resume_text" | default "이력서 다운로드") -}}
 
- <!-- 상단 2-컬럼: 사진/텍스트 간격 넓힘 -->
+<section class="py-16">
+<div class="max-w-5xl mx-auto px-6 md:pl-12">
  <div class="grid md:grid-cols-[240px_1fr] gap-12 xl:gap-16 items-start">
 
    <!-- 왼쪽: 아바타 + 아이콘들 -->
@@ -151,10 +160,8 @@
                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.51 5.51 0 0 1 12 7.5zm6.25-1.25a1.25 1.25 0 1 1-1.25 1.25A1.25 1.25 0 0 1 18.25 5.75z"/></svg>
              {{- else if eq $t "linkedin" -}}
                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.94 7.5H3.56V21h3.38V7.5zM5.25 3a2 2 0 1 0 .02 4 2 2 0 0 0-.02-4zM21 21h-3.38v-6.68c0-1.59-.03-3.62-2.2-3.62-2.2 0-2.54 1.72-2.54 3.51V21H9.5V7.5h3.24v1.84h.05c.45-.86 1.55-1.76 3.18-1.76 3.4 0 4.03 2.24 4.03 5.15V21z"/></svg>
-             {{- else if eq $t "email" -}}
-               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v.01L12 13l8-6.99V6H4zm16 12V9.25l-7.4 5.16a1 1 0 0 1-1.2 0L4 9.25V18h16z"/></svg>
              {{- else -}}
-               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg>
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v.01L12 13l8-6.99V6H4zm16 12V9.25l-7.4 5.16a1 1 0 0 1-1.2 0L4 9.25V18h16z"/></svg>
              {{- end -}}
            </a>
          {{- end -}}
@@ -162,13 +169,26 @@
      {{- end -}}
    </div>
 
-   <!-- 오른쪽: 이름, 텍스트 -->
+   <!-- 오른쪽: 이름, 텍스트 + 이력서 버튼 -->
    <div>
      {{- with $title -}}<h2 class="text-3xl font-semibold">{{ . }}</h2>{{- end -}}
      {{- if $text -}}
        <div class="mt-4 prose dark:prose-invert max-w-none">{{ $text | markdownify }}</div>
      {{- else if $textHTML -}}
        <div class="mt-4 prose dark:prose-invert max-w-none">{{ $textHTML | safeHTML }}</div>
+     {{- end -}}
+
+     {{- with $resumeURL -}}
+       <div class="mt-6">
+         <a href="{{ . }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition"
+            target="_blank" rel="noopener">
+           <!-- download icon -->
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+             <path d="M12 3a1 1 0 011 1v9.59l2.3-2.3a1 1 0 011.4 1.42l-4 4a1 1 0 01-1.4 0l-4-4a1 1 0 111.4-1.42L11 13.59V4a1 1 0 011-1zM5 20a1 1 0 011-1h12a1 1 0 110 2H6a1 1 0 01-1-1z"/>
+           </svg>
+           <span>{{ $resumeText }}</span>
+         </a>
+       </div>
      {{- end -}}
    </div>
 
