@@ -1,0 +1,61 @@
+{{ define "main" }}
+
+{{/* 페이지 번들 내부 이미지 결정:
+     - .Params.image 가 있으면 그 파일 우선 (같은 폴더의 리소스/정적 경로/외부 URL 모두 지원)
+     - 없으면 번들 안의 첫 이미지 리소스 선택 */}}
+{{ $imgURL := "" }}
+{{ if .Params.image }}
+  {{ $src := .Params.image }}
+  {{ if or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "/") }}
+    {{ $imgURL = $src }}
+  {{ else }}
+    {{ $res := .Resources.GetMatch $src }}
+    {{ if not $res }}{{ $res = resources.Get (printf "media/%s" $src) }}{{ end }}
+    {{ if $res }}{{ $imgURL = $res.RelPermalink }}{{ else }}{{ $imgURL = printf "/media/%s" $src }}{{ end }}
+  {{ end }}
+{{ else }}
+  {{ $first := (.Resources.ByType "image") | first }}
+  {{ if $first }}{{ $imgURL = $first.RelPermalink }}{{ end }}
+{{ end }}
+
+<section class="container mx-auto px-6 py-10">
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+    <!-- 왼쪽: 이미지 -->
+    <div class="md:col-span-5">
+      {{ if $imgURL }}
+        <img src="{{ $imgURL }}" alt="{{ .Title }}" class="w-full h-auto rounded-xl shadow object-cover" />
+      {{ else }}
+        <div class="w-full h-[280px] rounded-xl bg-gray-200/40 dark:bg-gray-800/40"></div>
+      {{ end }}
+    </div>
+
+    <!-- 오른쪽: 설명 -->
+    <div class="md:col-span-7">
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">{{ .Title }}</h1>
+
+      <!-- 메타(선택) -->
+      <div class="text-sm text-gray-600 dark:text-gray-300 mb-5 space-x-3">
+        {{ with .Params.period }}<span>기간: {{ . }}</span>{{ end }}
+        {{ with .Params.role }}<span>역할: {{ . }}</span>{{ end }}
+        {{ with .Params.stack }}<span>스택: {{ delimit . ", " }}</span>{{ end }}
+      </div>
+
+      <!-- 버튼(선택) -->
+      <div class="flex flex-wrap gap-3 mb-6">
+        {{ with .Params.repo }}
+          <a href="{{ . }}" class="px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800">GitHub</a>
+        {{ end }}
+        {{ with .Params.demo }}
+          <a href="{{ . }}" class="px-4 py-2 rounded-xl bg-primary-600 text-white hover:bg-primary-700">데모 보기</a>
+        {{ end }}
+      </div>
+
+      <!-- 본문 -->
+      <div class="prose dark:prose-invert max-w-none">
+        {{ .Content }}
+      </div>
+    </div>
+  </div>
+</section>
+
+{{ end }}
