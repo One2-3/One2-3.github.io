@@ -1,7 +1,3 @@
 {{ define "main" }}
-  {{ if .IsHome }}
-    {{ partial "home_widgets_lang.html" (dict "ctx" .) }}
-  {{ else }}
-    {{ .Content }}
-  {{ end }}
+  {{ partial "home_widgets.html" . }}
 {{ end }}

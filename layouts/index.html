@@ -1,9 +1,1 @@
-{{ define "main" }}
-  {{ if .IsHome }}
-    {{ partial "home_widgets.html" . }}
-  {{ else }}
-    {{ .Content }}
-  {{ end }}
-
-  {{- partial "fab.html" . -}}
-{{ end }}
+{{ define "main" }} {{ partial "home_widgets.html" . }} {{ partial "fab.html" . }} {{ end }}
