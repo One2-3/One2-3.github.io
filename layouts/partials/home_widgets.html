@@ -1,29 +1,14 @@
-{{/* home_widgets.html — 다국어 안전판 (섹션/리프 둘 다 지원) */}}
+{{/* home_widgets.html — 다국어 안전판: GetPage 안 씀, 섹션 스캔 방식 */}}
 
 {{- $site := .Site -}}
+{{- $lang := $site.Language.Lang -}}
 
-{{/* 1) 현재 언어의 "home" 페이지를 우선 섹션으로 시도, 실패 시 리프(leaf)로 폴백 */}}
-{{- $home := or ($site.GetPage "section" "home")
-                ($site.GetPage "/home")
-                ($site.GetPage "/home/index") -}}
-
-{{- if not $home -}}
-  <section id="home-widgets">
-    <p style="color:#e74c3c;margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
-  </section>
-{{- else -}}
 <section id="home-widgets">
+  {{/* 1) 현재 언어 페이지 중 섹션이 home 인 페이지만 수집 */}}
+  {{- $pages   := where $site.RegularPages "Lang" $lang -}}
+  {{- $widgets := where $pages "Section" "home" -}}
 
-  {{/* 2) 위젯 수집: 섹션이면 .Pages, 리프면 .Resources */}}
-  {{- $widgets := slice -}}
-  {{- if eq $home.Kind "section" -}}
-    {{- $widgets = $home.Pages -}}
-  {{- else -}}
-    {{- $widgets = $home.Resources.ByType "page" -}}
-    {{- if not $widgets -}}{{- $widgets = $home.Resources.Match "**.md" -}}{{- end -}}
-  {{- end -}}
-
-  {{/* 3) widget 프론트매터가 있는 것만 weight 오름차순 */}}
+  {{/* 2) widget 프론트매터가 있는 것만 weight 오름차순 */}}
   {{- $widgets = where $widgets ".Params.widget" "!=" nil -}}
   {{- $widgets = sort  $widgets "Params.weight" "asc" -}}
 
@@ -31,15 +16,13 @@
     <p style="color:#e74c3c;margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
   {{- else -}}
     {{- range $w := $widgets -}}
-      {{- $wname := lower (printf "%v" (index $w.Params "widget")) -}}
-      {{- $partial := printf "widgets/%s.html" (replace $wname "." "_") -}}
+      {{- $name    := lower (printf "%v" (index $w.Params "widget")) -}}
+      {{- $partial := printf "widgets/%s.html" (replace $name "." "_") -}}
       {{- if templates.Exists (printf "partials/%s" $partial) -}}
         {{- partial $partial (dict "page" . "widget" $w) -}}
       {{- else -}}
-        <div class="py-8 text-amber-600">Unknown widget: <code>{{ $wname }}</code></div>
+        <div class="py-8 text-amber-600">Unknown widget: <code>{{ $name }}</code></div>
       {{- end -}}
     {{- end -}}
   {{- end -}}
-
 </section>
-{{- end -}}
