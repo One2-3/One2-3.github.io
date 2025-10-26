@@ -1,50 +1,73 @@
-{{/* Projects – side cards (image left, text right) */}}
+{{- /* widgets/projects_side_cards.html */ -}}
+{{- $w := .widget -}}
+{{- $params := $w.Params -}}
+
+{{- /* content.title / content.text 지원 + 구버전 호환 */ -}}
+{{- $block := $params.content | default $params -}}
+{{- $title := $block.title | default "프로젝트" -}}
+{{- $text  := $block.text  | default "" -}}
+
+{{- /* items 배열 찾기 (content.items 또는 items) */ -}}
+{{- $items := $block.items | default $params.items | default (slice) -}}
+
 <section id="projects" class="container mx-auto px-6">
-  <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">프로젝트</h2>
-  <p class="text-gray-400 mb-8">수행한 프로젝트들입니다.</p>
+  <h2 class="text-3xl md:text-4xl font-extrabold mb-2">{{ $title }}</h2>
+  {{ with $text }}<p class="text-gray-600 dark:text-gray-300 mb-6">{{ . }}</p>{{ end }}
 
-  <div class="space-y-10">
-    {{ range .widget.Params.items }}
-      <article class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-        <!-- 이미지 영역 -->
-        <div class="md:col-span-6">
-          <div class="relative group rounded-xl overflow-hidden">
-            {{ $img := .image | default "media/placeholder.jpg" }}
-            <img src="{{ $img | relURL }}"
-                 alt="{{ .title }}"
-                 class="w-full h-60 md:h-72 object-cover select-none">
+  {{- if not (gt (len $items) 0) -}}
+    <div class="py-10 text-amber-500">프로젝트 항목(items)이 없습니다. `content.items`에 데이터를 추가하세요.</div>
+  {{- else -}}
+    <div class="space-y-6">
+      {{- range $it := $items -}}
+        {{- /* 이미지 URL 안전하게 해석 */ -}}
+        {{- $imgURL := "" -}}
+        {{- $raw := $it.image -}}
+        {{- if (reflect.IsMap $raw) }}{{ $raw = $raw.filename }}{{ end }}
+        {{- with $raw -}}
+          {{- $s := printf "%v" . -}}
+          {{- if or (hasPrefix $s "http://") (hasPrefix $s "https://") (hasPrefix $s "/") -}}
+            {{- $imgURL = $s -}}
+          {{- else -}}
+            {{- $res := $w.Resources.GetMatch $s -}}
+            {{- if $res -}}
+              {{- $imgURL = $res.RelPermalink -}}
+            {{- else -}}
+              {{- /* 정적 폴더 우선: static/uploads, static/media */ -}}
+              {{- $cand1 := printf "/uploads/%s" $s -}}
+              {{- $cand2 := printf "/media/%s"   $s -}}
+              {{- $imgURL = $cand1 -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
 
-            <!-- 이미지를 전체 클릭 가능하게 -->
-            <a href="{{ .url | relURL }}" class="absolute inset-0 z-20" aria-label="{{ .title }}"></a>
-
-            <!-- 호버 때만 살짝 어두워지는 레이어 -->
-            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition"></div>
-
-            <!-- 호버 시 나타나는 '자세히 보기' 텍스트 (버튼 아님) -->
-            <div class="pointer-events-none absolute inset-0 flex items-center justify-center
-                        opacity-0 group-hover:opacity-100 transition">
-              <span class="text-white text-lg md:text-xl font-semibold underline decoration-2">
-                자세히 보기
-              </span>
-            </div>
+        <div class="grid grid-cols-12 gap-5 rounded-2xl bg-gray-100/5 dark:bg-gray-900/20 p-4">
+          <!-- 왼쪽: 이미지 + hover 오버레이(텍스트만) -->
+          <div class="col-span-12 md:col-span-5">
+            {{- if $imgURL -}}
+              <a href="{{ $it.url | default "#" }}" class="group relative block rounded-xl overflow-hidden">
+                <img src="{{ $imgURL }}" alt="{{ $it.title | default "project" }}"
+                     class="w-full h-56 md:h-60 object-cover transition duration-300 group-hover:opacity-75" />
+                <span class="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                  <span class="bg-black/55 text-white text-sm px-3 py-1 rounded-md">자세히 보기</span>
+                </span>
+              </a>
+            {{- else -}}
+              <div class="w-full h-56 md:h-60 rounded-xl bg-gray-200/40 dark:bg-gray-700/40"></div>
+            {{- end -}}
           </div>
-        </div>
 
-        <!-- 텍스트 영역 -->
-        <div class="md:col-span-6 flex">
-          <div class="rounded-xl bg-zinc-900/40 dark:bg-zinc-800/40 border border-zinc-700/40 w-full p-6">
-            <h3 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-3">{{ .title }}</h3>
-            {{ with .summary }}
-              <p class="text-gray-300 mb-3">{{ . }}</p>
-            {{ end }}
-            {{ with .bullets }}
-              <ul class="list-disc pl-5 space-y-1 text-gray-300">
-                {{ range . }}<li>{{ . }}</li>{{ end }}
+          <!-- 오른쪽: 텍스트 -->
+          <div class="col-span-12 md:col-span-7">
+            <h3 class="text-2xl font-bold mb-1">{{ $it.title | default "프로젝트" }}</h3>
+            {{ with $it.summary }}<p class="text-gray-600 dark:text-gray-300 mb-3">{{ . }}</p>{{ end }}
+            {{ with $it.bullets }}
+              <ul class="list-disc pl-6 space-y-1 text-gray-700 dark:text-gray-200">
+                {{- range . }}<li>{{ . }}</li>{{- end }}
               </ul>
             {{ end }}
           </div>
         </div>
-      </article>
-    {{ end }}
-  </div>
+      {{- end -}}
+    </div>
+  {{- end -}}
 </section>
