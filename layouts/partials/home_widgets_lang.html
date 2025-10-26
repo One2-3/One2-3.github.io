@@ -1,48 +1,24 @@
-{{/* 언어 고정 + Section→Leaf→스캔 3단계 안전판 (leaf 리소스까지 수집) */}}
+{{/* home_widgets_lang.html — 다국어 안전판: RegularPages + 디렉토리 스캔(ko/en/home), 위젯만 weight 정렬 */}}
 
 {{- $ctx  := .ctx | default . -}}
 {{- $site := $ctx.Site -}}
 {{- $lang := $site.Language.Lang -}}
+{{- $dir  := printf "%s/home/" $lang -}}
 
 <section id="home-widgets">
-  {{- $widgets := slice -}}
+  {{/* 1) 현재 언어의 RegularPages 중에서 디렉터리가 "<lang>/home/" 인 것만 */}}
+  {{- $pages := where $site.RegularPages "Lang" $lang -}}
+  {{- $widgets := where $pages "File.Dir" $dir -}}
 
-  {{/* 1) Section 방식: /<lang>/home/_index.md 자식 페이지에서 widget 수집 */}}
-  {{- $sec := $site.GetPage "/home" -}}
-  {{- if $sec -}}
-    <!-- DBG: section home found -->
-    {{- $secWidgets := where $sec.Pages ".Params.widget" "!=" nil -}}
-    {{- $secWidgets = where $secWidgets "Lang" $lang -}}
-    {{- $widgets = $secWidgets -}}
-  {{- end -}}
-
-  {{/* 2) Leaf 방식: /<lang>/home/index.md 리소스(md)에서 widget 수집 */}}
-  {{- if not (gt (len $widgets) 0) -}}
-    {{- $leaf := $site.GetPage "/home/index" -}}
-    {{- if $leaf -}}
-      <!-- DBG: leaf home found -->
-      {{- $res := $leaf.Resources.ByType "page" -}}
-      {{- if not $res -}}{{- $res = $leaf.Resources.Match "**.md" -}}{{- end -}}
-      {{- $res = where $res ".Params.widget" "!=" nil -}}
-      {{- $widgets = $res -}}
-    {{- end -}}
-  {{- end -}}
-
-  {{/* 3) 폴백: 현재 언어 + Section=home 에 속하는 페이지 중 widget 수집 (하위폴더 포함) */}}
-  {{- if not (gt (len $widgets) 0) -}}
-    <!-- DBG: fallback scan -->
-    {{- $all := where $site.AllPages "Lang" $lang -}}
-    {{- $all = where $all "Section" "home" -}}
-    {{- $all = where $all ".Params.widget" "!=" nil -}}
-    {{- $widgets = $all -}}
-  {{- end -}}
-
-  {{- $widgets = sort $widgets "Params.weight" "asc" -}}
+  {{/* 2) widget 프론트매터가 있는 페이지만 추림 + weight 정렬 */}}
+  {{- $widgets = where $widgets ".Params.widget" "!=" nil -}}
+  {{- $widgets = sort  $widgets "Params.weight" "asc" -}}
 
   {{- if not (gt (len $widgets) 0) -}}
     <p style="color:#e74c3c;margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
+    <!-- DBG: lang={{ $lang }}, dir={{ $dir }}, count=0 -->
   {{- else -}}
-    <!-- DBG: widgets count = {{ len $widgets }} -->
+    <!-- DBG: lang={{ $lang }}, dir={{ $dir }}, count={{ len $widgets }} -->
     {{- range $w := $widgets -}}
       {{- $name := lower (printf "%v" (index $w.Params "widget")) -}}
       {{- $partial := printf "widgets/%s.html" (replace $name "." "_") -}}
