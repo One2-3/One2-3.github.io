@@ -1,7 +1,7 @@
 ---
 widget: about.avatar_intro
 id: profile_intro
-headless: true
+#headless: true
 weight: 2
 content:
   # If you want to use avatarRef, you can keep it, but specify 'avatar' too to ensure the photo renders

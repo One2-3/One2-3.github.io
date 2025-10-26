@@ -1,7 +1,7 @@
 ---
 widget: about.avatar_intro
 id: profile_intro
-headless: true
+#headless: true
 weight: 2
 content:
   # avatarRef를 쓰고 싶으면 그대로 두되, 사진이 확실히 뜨게 'avatar'도 함께 명시

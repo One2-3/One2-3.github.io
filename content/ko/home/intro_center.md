@@ -1,6 +1,6 @@
 ---
 widget: markdown       
-headless: true
+#headless: true
 weight: 3             
 design:
   css_class: "text-center"   
