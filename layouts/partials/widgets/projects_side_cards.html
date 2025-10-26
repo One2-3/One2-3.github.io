@@ -1,0 +1,51 @@
+{{/* projects_side_cards: 좌측 이미지, 우측 텍스트. 이미지 클릭 시 상세로 이동. */}}
+{{- $w := .widget -}}
+{{- $p := $w.Params.content -}}
+{{- $items := $p.items | default (slice) -}}
+
+<section class="container mx-auto px-6 py-12">
+  {{ with $p.title }}<h2 class="text-2xl md:text-3xl font-bold mb-2">{{ . }}</h2>{{ end }}
+  {{ with $p.text }}<p class="text-gray-600 dark:text-gray-300 mb-6">{{ . }}</p>{{ end }}
+
+  <div class="space-y-8">
+    {{ range $it := $items }}
+      {{- $imgURL := "" -}}
+      {{- with $it.image -}}
+        {{- $res := $w.Resources.GetMatch . -}}
+        {{- if not $res }}{{ $res = resources.Get (printf "media/%s" .) }}{{ end }}
+        {{- if $res }}{{ $imgURL = $res.RelPermalink }}{{ else }}{{ $imgURL = . }}{{ end }}
+      {{- end -}}
+
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch rounded-2xl ring-1 ring-gray-300/40 dark:ring-gray-700/40 overflow-hidden">
+        <!-- 이미지(좌) -->
+        <a href="{{ $it.url }}" class="relative md:col-span-2 group block">
+          <div class="relative h-56 md:h-full">
+            {{ if $imgURL }}
+              <img src="{{ $imgURL }}" alt="{{ $it.title }}" class="absolute inset-0 w-full h-full object-cover">
+            {{ else }}
+              <div class="absolute inset-0 w-full h-full bg-gray-200 dark:bg-gray-700"></div>
+            {{ end }}
+            <!-- 호버 오버레이 + '자세히 보기' -->
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition"></div>
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+              <span class="px-4 py-2 rounded-full bg-white/90 text-gray-900 text-sm font-semibold shadow">
+                자세히 보기
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <!-- 텍스트(우) -->
+        <div class="md:col-span-3 p-5 md:p-6 flex flex-col justify-center">
+          <h3 class="text-xl md:text-2xl font-semibold mb-2">{{ $it.title }}</h3>
+          {{ with $it.summary }}<p class="text-gray-600 dark:text-gray-300 mb-3">{{ . }}</p>{{ end }}
+          {{ with $it.bullets }}
+            <ul class="list-disc pl-5 space-y-1 text-gray-700 dark:text-gray-200">
+              {{ range . }}<li>{{ . }}</li>{{ end }}
+            </ul>
+          {{ end }}
+        </div>
+      </div>
+    {{ end }}
+  </div>
+</section>

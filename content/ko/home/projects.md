@@ -1,38 +1,33 @@
 ---
-widget: cta_image_paragraph   # 또는 cta-image-paragraph (로더에서 -→_ 처리하면 어느 쪽이든 OK)
+widget: projects_side_cards   # ← 새 위젯 이름
 id: projects
-headless: false               # ← 페이지에 표시하려면 false
-weight: 5
+headless: true
+weight: 30
+id: projects
 
 content:
-  title: "프로젝트"              # 섹션 타이틀 (선택)
+  title: "프로젝트"
+  text: "최근 작업입니다."
   items:
-    - title: "프로젝트1"
-      text: ""
-      features:
-        - "소개할 프로젝트가 없어 칸만 만들어둠."
-        - "소개1"
-        - "소개2"
-      image: "pro1.jpg"     
-      button:
-        text: "자세히보기"
-        url: "/ko/project/p1/"  # 원하는 경로로
-    - title: "프로젝트2"
-      text: ""
-      features:
-        - "소개1"
-        - "소개2"
-      image: "pro2.jpg"    
-      button:
-        text: "자세히보기"
-        url: "/ko/project/p1/"  # 원하는 경로로
-    - title: "프로젝트3"
-      text: ""
-      features:
-        - "소개1"
-        - "소개2"
-      image: "pro3.jpg"      
-      button:
-        text: "자세히보기"
-        url: "/ko/project/p1/"  # 원하는 경로로
+    - title: "프로젝트 1"
+      summary: "소개할만한 프로젝트가 없어 칸만 만들어둠"
+      bullets:
+        - "기능 A"
+        - "기능 B"
+      image: "pro1.jpg"       # 같은 번들 리소스 / assets/media/pro1.jpg / 절대 URL 모두 OK
+      url: "/ko/project/p1/"
+    - title: "프로젝트 2"
+      summary: "간단 설명 한 줄…"
+      bullets:
+        - "요약 1"
+        - "요약 2"
+      image: "pro2.jpg"
+      url: "/ko/project/p2/"
+    - title: "프로젝트 3"
+      summary: "간단 설명 한 줄…"
+      bullets:
+        - "포인트 1"
+        - "포인트 2"
+      image: "pro3.jpg"
+      url: "/ko/project/p3/"
 ---
