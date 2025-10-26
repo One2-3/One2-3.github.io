@@ -1,66 +1,44 @@
-{{/* icon.html — 안전한 아이콘 로더
-    사용법:
-      {{ partial "icon.html" (dict "name" "hero/outline/book-open" "class" "h-6 w-6") }}
-      {{ partial "icon.html" (dict "name" "book" "class" "h-6 w-6") }}
-    동작:
-      1) 경로가 포함된 name 우선 시도 (예: hero/outline/book-open)
-      2) 아니면 hero/outline → hero/solid → brands → academicons 순으로 후보 생성
-      3) 그래도 없으면 media/icons/**/<name>.svg, icons/**/<name>.svg 와일드카드 탐색
-      4) 끝까지 못 찾으면 ⬜ 출력
-*/}}
-
-{{- $name  := .name | default "" -}}
+{{- $name := .name | default "" -}}
 {{- $class := .class | default "h-6 w-6" -}}
 
 {{- if not $name -}}
- <span class="{{ $class }}" aria-hidden="true">⬜</span>
+  <span class="{{ $class }}" aria-hidden="true">⬜</span>
 {{- else -}}
+  {{- $svg := nil -}}
+  {{- $cands := slice -}}
 
- {{- $candidates := slice -}}
+  {{- /* 후보 경로 만들기 (문자열 연산만, 주석은 라인 중간에만 둠) */ -}}
+  {{- if or (strings.Contains $name "/") (strings.HasSuffix $name ".svg") -}}
+    {{- $clean := strings.TrimSuffix $name ".svg" -}}
+    {{- $cands = $cands | append (printf "media/icons/%s.svg" $clean) -}}
+    {{- $cands = $cands | append (printf "icons/%s.svg" $clean) -}}
+  {{- else -}}
+    {{- $cands = $cands | append (printf "media/icons/hero/outline/%s.svg" $name) -}}
+    {{- $cands = $cands | append (printf "media/icons/hero/solid/%s.svg" $name) -}}
+    {{- $cands = $cands | append (printf "media/icons/brands/%s.svg" $name) -}}
+    {{- $cands = $cands | append (printf "media/icons/academicons/%s.svg" $name) -}}
+    {{- $cands = $cands | append (printf "icons/hero/outline/%s.svg" $name) -}}
+    {{- $cands = $cands | append (printf "icons/hero/solid/%s.svg" $name) -}}
+    {{- $cands = $cands | append (printf "icons/brands/%s.svg" $name) -}}
+    {{- $cands = $cands | append (printf "icons/academicons/%s.svg" $name) -}}
+  {{- end -}}
 
- {{- /* 1) name이 경로 형태(슬래시 포함)거나 .svg로 끝나면 그대로 시도 */ -}}
- {{- if or (strings.Contains $name "/") (strings.HasSuffix $name ".svg") -}}
-   {{- $clean := strings.TrimSuffix $name ".svg" -}}
-   {{- $candidates = $candidates | append (printf "media/icons/%s.svg" $clean) -}}
-   {{- $candidates = $candidates | append (printf "icons/%s.svg" $clean) -}}
- {{- else -}}
-   {{- /* 2) 프리픽스 추측 */ -}}
-   {{- $candidates = $candidates | append (printf "media/icons/hero/outline/%s.svg" $name) -}}
-   {{- $candidates = $candidates | append (printf "media/icons/hero/solid/%s.svg" $name) -}}
-   {{- $candidates = $candidates | append (printf "media/icons/brands/%s.svg" $name) -}}
-   {{- $candidates = $candidates | append (printf "media/icons/academicons/%s.svg" $name) -}}
-   {{- $candidates = $candidates | append (printf "icons/hero/outline/%s.svg" $name) -}}
-   {{- $candidates = $candidates | append (printf "icons/hero/solid/%s.svg" $name) -}}
-   {{- $candidates = $candidates | append (printf "icons/brands/%s.svg" $name) -}}
-   {{- $candidates = $candidates | append (printf "icons/academicons/%s.svg" $name) -}}
- {{- end -}}
+  {{- range $cands -}}
+    {{- if not $svg -}}
+      {{- $hit := resources.Get . -}}
+      {{- if $hit -}}{{- $svg = $hit -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
 
- {{- /* 후보에서 첫 성공 리소스 선택 */ -}}
- {{- $svg := nil -}}
- {{- range $candidates -}}
-   {{- if not $svg -}}
-     {{- $try := resources.Get . -}}
-     {{- if $try -}}{{- $svg = $try -}}{{- end -}}
-   {{- end -}}
- {{- end -}}
+  {{- if not $svg -}}
+    {{- $hits := resources.Match (printf "media/icons/**/%s.svg" $name) -}}
+    {{- if not $hits -}}{{- $hits = resources.Match (printf "icons/**/%s.svg" $name) -}}{{- end -}}
+    {{- if $hits -}}{{- $svg = index $hits 0 -}}{{- end -}}
+  {{- end -}}
 
- {{- /* 3) 와일드카드 매칭 (폴더 구조가 달라도 이름만 맞으면 탐색) */ -}}
- {{- if not $svg -}}
-   {{- $pattern1 := printf "media/icons/**/%s.svg" $name -}}
-   {{- $pattern2 := printf "icons/**/%s.svg" $name -}}
-   {{- $hits := resources.Match $pattern1 -}}
-   {{- if not $hits -}}{{- $hits = resources.Match $pattern2 -}}{{- end -}}
-   {{- if $hits -}}
-     {{- $svg = index $hits 0 -}}
-   {{- end -}}
- {{- end -}}
-
- {{- if $svg -}}
-   <span class="{{ $class }} inline-block align-middle" aria-hidden="true">
-     {{ $svg.Content | safeHTML }}
-   </span>
- {{- else -}}
-   <span class="{{ $class }}" aria-hidden="true">⬜</span>
- {{- end -}}
-
+  {{- if $svg -}}
+    <span class="{{ $class }} inline-block align-middle" aria-hidden="true">{{ $svg.Content | safeHTML }}</span>
+  {{- else -}}
+    <span class="{{ $class }}" aria-hidden="true">⬜</span>
+  {{- end -}}
 {{- end -}}
