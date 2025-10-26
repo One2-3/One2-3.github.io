@@ -1,41 +1,94 @@
-{{- /* inputs */ -}}
+{{- /* Simple, fileless icon renderer.
+    * If a known name is passed, render an inline SVG.
+    * Otherwise, try to load from assets via resources.Get with safe fallbacks.
+    */ -}}
+
 {{- $name  := .name  | default "" -}}
 {{- $class := .class | default "h-6 w-6" -}}
 
 {{- if not $name -}}
-  <span class="{{ $class }}" aria-hidden="true">⬜</span>
+ <span class="{{ $class }}" aria-hidden="true">⬜</span>
 {{- else -}}
-  {{- /* 후보 경로 만들기 */ -}}
-  {{- $cands := slice -}}
-  {{- if or (hasSuffix $name ".svg") (in $name "/") -}}
-    {{- $clean := replace $name ".svg" "" -}}
-    {{- $cands = $cands | append (printf "media/icons/%s.svg" $clean) -}}
-    {{- $cands = $cands | append (printf "icons/%s.svg" $clean) -}}
-  {{- else -}}
-    {{- $cands = $cands | append (printf "media/icons/hero/outline/%s.svg" $name) -}}
-    {{- $cands = $cands | append (printf "media/icons/hero/solid/%s.svg"   $name) -}}
-    {{- $cands = $cands | append (printf "media/icons/brands/%s.svg"       $name) -}}
-    {{- $cands = $cands | append (printf "media/icons/academicons/%s.svg"  $name) -}}
-    {{- $cands = $cands | append (printf "icons/hero/outline/%s.svg"       $name) -}}
-    {{- $cands = $cands | append (printf "icons/hero/solid/%s.svg"         $name) -}}
-    {{- $cands = $cands | append (printf "icons/brands/%s.svg"             $name) -}}
-    {{- $cands = $cands | append (printf "icons/academicons/%s.svg"        $name) -}}
-  {{- end -}}
 
-  {{- /* 첫 번째로 존재하는 리소스를 찾기 (Scratch 사용) */ -}}
-  {{- $.Scratch.Delete "hb_icon_svg" -}}
-  {{- range $cands -}}
-    {{- with resources.Get . -}}
-      {{- $.Scratch.Set "hb_icon_svg" . -}}
-      {{- break -}}
-    {{- end -}}
-  {{- end -}}
+ {{- /* 1) Inline SVG for common names (no asset files needed) */ -}}
+ {{- if eq $name "book" -}}
+   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+     <path stroke-width="1.5" d="M4.5 5.25A2.25 2.25 0 0 1 6.75 3h10.5A2.25 2.25 0 0 1 19.5 5.25v13.5A2.25 2.25 0 0 1 17.25 21H6.75A2.25 2.25 0 0 1 4.5 18.75V5.25Z"/>
+     <path stroke-width="1.5" d="M8.25 7.5h7.5M8.25 10.5h7.5M8.25 13.5h7.5"/>
+   </svg>
 
-  {{- with $.Scratch.Get "hb_icon_svg" -}}
-    <span class="{{ $class }} inline-block align-middle" aria-hidden="true">
-      {{ .Content | safeHTML }}
-    </span>
-  {{- else -}}
-    <span class="{{ $class }}" aria-hidden="true">⬜</span>
-  {{- end -}}
+ {{- else if eq $name "microphone" -}}
+   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+     <rect x="9" y="3" width="6" height="10" rx="3" stroke-width="1.5"/>
+     <path stroke-width="1.5" d="M5 11a7 7 0 0 0 14 0M12 18v3"/>
+   </svg>
+
+ {{- else if eq $name "sparkles" -}}
+   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+     <path stroke-width="1.5" d="M12 3l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4Z"/>
+     <path stroke-width="1.5" d="M18 14l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2Z"/>
+   </svg>
+
+ {{- else if eq $name "code-bracket" -}}
+   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+     <path stroke-width="1.5" d="M9 7L5 12l4 5M15 7l4 5-4 5"/>
+   </svg>
+
+ {{- else if eq $name "star" -}}
+   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+     <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+   </svg>
+
+ {{- else if or (eq $name "rectangle-group") (eq $name "grid") -}}
+   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+     <rect x="3" y="4" width="8" height="7" rx="1.5" stroke-width="1.5"/>
+     <rect x="13" y="4" width="8" height="7" rx="1.5" stroke-width="1.5"/>
+     <rect x="3" y="13" width="8" height="7" rx="1.5" stroke-width="1.5"/>
+     <rect x="13" y="13" width="8" height="7" rx="1.5" stroke-width="1.5"/>
+   </svg>
+
+ {{- else if or (eq $name "brands/github") (eq $name "github") -}}
+   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+     <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.61-3.37-1.18-3.37-1.18-.45-1.14-1.1-1.44-1.1-1.44-.9-.62.07-.61.07-.61 1 .07 1.52 1.05 1.52 1.05.89 1.52 2.34 1.08 2.9.83.09-.65.35-1.09.63-1.34-2.22-.26-4.56-1.11-4.56-4.95 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.29.1-2.68 0 0 .84-.27 2.75 1.02A9.57 9.57 0 0 1 12 7.07a9.6 9.6 0 0 1 2.5.34c1.92-1.29 2.75-1.02 2.75-1.02.55 1.39.2 2.43.1 2.68.64.7 1.03 1.59 1.03 2.68 0 3.85-2.34 4.68-4.57 4.94.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/>
+   </svg>
+
+ {{- else if or (eq $name "brands/instagram") (eq $name "instagram") -}}
+   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+     <rect x="3" y="3" width="18" height="18" rx="5" stroke-width="1.5"/>
+     <circle cx="12" cy="12" r="4" stroke-width="1.5"/>
+     <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>
+   </svg>
+
+ {{- else if or (eq $name "at-symbol") (eq $name "email") -}}
+   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+     <path stroke-width="1.5" d="M12 19a7 7 0 1 1 7-7v2a2 2 0 0 1-4 0v-5M12 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/>
+   </svg>
+
+ {{- else -}}
+   {{- /* 2) 마지막 시도: 로컬 assets에서 찾아보기 (없으면 ⬜ 출력) */ -}}
+   {{- $cands := slice
+       (printf "media/icons/%s.svg" $name)
+       (printf "icons/%s.svg" $name)
+       (printf "media/icons/hero/outline/%s.svg" $name)
+       (printf "media/icons/hero/solid/%s.svg" $name)
+       (printf "media/icons/brands/%s.svg" $name)
+       (printf "icons/hero/outline/%s.svg" $name)
+       (printf "icons/hero/solid/%s.svg" $name)
+       (printf "icons/brands/%s.svg" $name)
+     -}}
+   {{- $.Scratch.Delete "hb_icon_svg" -}}
+   {{- range $cands -}}
+     {{- with resources.Get . -}}
+       {{- $.Scratch.Set "hb_icon_svg" . -}}
+       {{- break -}}
+     {{- end -}}
+   {{- end -}}
+   {{- with $.Scratch.Get "hb_icon_svg" -}}
+     <span class="{{ $class }} inline-block align-middle" aria-hidden="true">
+       {{ .Content | safeHTML }}
+     </span>
+   {{- else -}}
+     <span class="{{ $class }}" aria-hidden="true">⬜</span>
+   {{- end -}}
+ {{- end -}}
 {{- end -}}
