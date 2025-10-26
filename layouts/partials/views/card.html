@@ -1,61 +1,41 @@
-{{/* 안전 카드 뷰: get_featured_image.html 호출 제거 버전 */}}
-{{- $page := .page -}}
-{{- $item := .item -}}
-{{- $index := .index | default 0 -}}
-{{- $cfg := .config | default dict -}}
+{{/* 카드 뷰 - get_featured_image.html 안 씀 */}}
+{{- $item := . -}}
 
-{{/* 1) 썸네일 경로 계산 (문자열만) */}}
-{{- $imgParam := $item.Params.image -}}
-{{- $imgName := "" -}}
-{{- if $imgParam -}}
-  {{- $t := printf "%T" $imgParam -}}
-  {{- if or (in $t "map") (in $t "Params") -}}
-    {{- $imgName = or (index $imgParam "filename") (index $imgParam "src") (index $imgParam "url") "" -}}
+{{/* 이미지 안전 처리: image 값이 "문자열"일 때만 처리 */}}
+{{- $img := "" -}}
+{{- $raw := $item.Params.image -}}
+{{- if and $raw (eq (printf "%T" $raw) "string") -}}
+  {{- $src := $raw -}}
+  {{- if or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "/") -}}
+    {{- $img = $src -}}
   {{- else -}}
-    {{- $imgName = $imgParam -}}
-  {{- end -}}
-{{- end -}}
-{{- $imgURL := "" -}}
-{{- if $imgName -}}
-  {{- if or (hasPrefix $imgName "http://") (hasPrefix $imgName "https://") (hasPrefix $imgName "/") -}}
-    {{- $imgURL = $imgName -}}
-  {{- else -}}
-    {{- /* 정적 경로로 가정: static/media/에 파일을 두고 image: "파일명" */ -}}
-    {{- $imgURL = printf "/media/%s" $imgName -}}
+    {{- with $item.Resources.GetMatch $src -}}
+      {{- $img = .RelPermalink -}}
+    {{- else -}}
+      {{- with resources.Get (printf "media/%s" $src) -}}
+        {{- $img = .RelPermalink -}}
+      {{- else -}}
+        {{- $img = (printf "/media/%s" $src) -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 
-{{/* 2) 메타 */}}
-{{- $title := $item.Title | default ($item.Params.title | default "Untitled") -}}
-{{- $summary := $item.Summary | default ($item.Params.excerpt | default "") -}}
-{{- $permalink := $item.RelPermalink -}}
-{{- $date := $item.Date -}}
-
-<article class="group rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow transition">
-  {{/* 썸네일 */}}
-  {{- if $imgURL }}
-    <a href="{{ $permalink }}" class="block aspect-[16/9] bg-gray-100 dark:bg-gray-900 overflow-hidden">
-      <img
-        src="{{ $imgURL }}"
-        alt="{{ $title }}"
-        class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform"
-        loading="lazy" />
-    </a>
-  {{- end }}
-
-  <div class="p-4">
-    <h3 class="text-lg font-semibold mb-1">
-      <a href="{{ $permalink }}" class="hover:underline">{{ $title }}</a>
-    </h3>
-
-    {{- with $date }}
-      <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">
-        {{ . | time.Format "2006-01-02" }}
+<article class="group rounded-2xl border border-gray-200/70 dark:border-gray-800/70 overflow-hidden hover:shadow-md transition">
+  <a href="{{ $item.RelPermalink }}" class="block">
+    {{ if $img }}
+      <div class="relative aspect-[16/9] overflow-hidden">
+        <img src="{{ $img }}" alt="{{ $item.Title }}" class="w-full h-full object-cover">
+        <div class="absolute inset-0 opacity-0 group-hover:opacity-10 bg-black transition"></div>
       </div>
-    {{- end }}
-
-    {{- with $summary }}
-      <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">{{ . }}</p>
-    {{- end }}
-  </div>
+    {{ else }}
+      <div class="aspect-[16/9] bg-gray-100 dark:bg-gray-800"></div>
+    {{ end }}
+    <div class="p-4">
+      <h3 class="text-lg font-semibold mb-2">{{ $item.Title }}</h3>
+      {{ with $item.Params.summary }}
+        <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{{ . }}</p>
+      {{ end }}
+    </div>
+  </a>
 </article>
