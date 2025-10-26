@@ -1,22 +1,22 @@
-{{/* home_widgets.html — 다국어 안전판: GetPage 안 씀, 섹션 스캔 방식 */}}
+{{/* 홈 위젯 렌더러(언어별, 안정 버전): Section=="home" + Lang 필터 */}}
 
 {{- $site := .Site -}}
 {{- $lang := $site.Language.Lang -}}
 
 <section id="home-widgets">
-  {{/* 1) 현재 언어 페이지 중 섹션이 home 인 페이지만 수집 */}}
-  {{- $pages   := where $site.RegularPages "Lang" $lang -}}
-  {{- $widgets := where $pages "Section" "home" -}}
+  {{/* 현재 언어 + home 섹션의 RegularPages만 추림 */}}
+  {{- $widgets := where $site.RegularPages "Lang" $lang -}}
+  {{- $widgets = where $widgets "Section" "home" -}}
 
-  {{/* 2) widget 프론트매터가 있는 것만 weight 오름차순 */}}
+  {{/* widget 프론트매터가 있는 페이지만 + weight 정렬 */}}
   {{- $widgets = where $widgets ".Params.widget" "!=" nil -}}
-  {{- $widgets = sort  $widgets "Params.weight" "asc" -}}
+  {{- $widgets = sort  $widgets "Weight" "asc" -}}
 
   {{- if not (gt (len $widgets) 0) -}}
     <p style="color:#e74c3c;margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
   {{- else -}}
     {{- range $w := $widgets -}}
-      {{- $name    := lower (printf "%v" (index $w.Params "widget")) -}}
+      {{- $name := lower (printf "%v" (index $w.Params "widget")) -}}
       {{- $partial := printf "widgets/%s.html" (replace $name "." "_") -}}
       {{- if templates.Exists (printf "partials/%s" $partial) -}}
         {{- partial $partial (dict "page" . "widget" $w) -}}
