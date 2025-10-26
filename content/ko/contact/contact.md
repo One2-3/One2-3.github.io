@@ -1,7 +1,8 @@
 ---
 title: Contact
 type: landing
-
+slug: "contact"
+url: "/ko/contact/contact/"
 sections:
   - block: contact
     content:

@@ -1,7 +1,7 @@
 ---
 # Display name
 title: 박지유
-headless: true 
+#headless: true 
 avatar: "/media/avatar.png"  
 
 # Full name (for SEO)
