@@ -1,11 +1,11 @@
-{{/* layouts/partials/home_widgets.html — 언어별(.Site)로 home 찾기, leaf/section 모두 지원 */}}
+{{/* layouts/partials/home_widgets.html — 언어 지정 + 타입 지정으로 모호성 제거, leaf/section 모두 지원 */}}
 
-{{- $site := .Site -}}
+{{- $lang := .Lang -}}
 
-{{/* 1) 현재 언어 사이트에서만 home을 찾는다 (모호 호출 금지) */}}
-{{- $home := $site.GetPage "section" "home" -}}          {{/* content/<lang>/home/_index.md */}}
-{{- if not $home -}} {{- $home = $site.GetPage "/home" -}} {{- end -}}   {{/* content/<lang>/home/index.md */}}
-{{- if not $home -}} {{- $home = $site.GetPage "page" "home/index" -}} {{- end -}}
+{{/* 1) 현재 언어 경로로만 home 찾기 (타입을 명시하여 모호성 제거) */}}
+{{- $home := site.GetPage "page"    (printf "/%s/home/index" $lang) -}}  {{/* leaf: index.md */}}
+{{- if not $home -}} {{- $home = site.GetPage "page"    (printf "/%s/home"       $lang) -}} {{- end -}}
+{{- if not $home -}} {{- $home = site.GetPage "section" (printf "/%s/home"       $lang) -}} {{- end -}}
 
 {{- if not $home -}}
   <p style="color:#e74c3c; margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
@@ -21,7 +21,7 @@
     {{- if not $widgets -}} {{- $widgets = $home.Resources.Match "**.md" -}} {{- end -}}
   {{- end -}}
 
-  {{/* widget 지정된 것만 weight 순 정렬 */}}
+  {{/* widget 지정된 항목만 weight 순으로 렌더 */}}
   {{- $widgets = where $widgets ".Params.widget" "!=" nil -}}
   {{- $widgets = sort  $widgets "Params.weight" "asc" -}}
 
