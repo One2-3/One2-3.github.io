@@ -1,99 +1,71 @@
-{{- /* Simple, fileless icon renderer.
-    * If a known name is passed, render an inline SVG.
-    * Otherwise, try to load from assets via resources.Get with safe fallbacks.
-    */ -}}
+{{/* layouts/partials/icon.html
+    사용법: {{ partial "icon.html" (dict "name" "github" "class" "h-7 w-7") }}
+    - name  : 아이콘 이름 (대소문자 무시)
+    - class : 선택. 크기/색 지정용 Tailwind 클래스 (기본: h-6 w-6)
+*/}}
 
-{{- $name  := .name  | default "" -}}
-{{- $class := .class | default "h-6 w-6" -}}
+{{- $n := lower (default "" .name) -}}
+{{- $cls := default "h-6 w-6" .class -}}
 
-{{- if not $name -}}
- <span class="{{ $class }}" aria-hidden="true">⬜</span>
+{{- if eq $n "server" -}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+ <rect x="3" y="3" width="18" height="7" rx="2" ry="2"></rect>
+ <rect x="3" y="14" width="18" height="7" rx="2" ry="2"></rect>
+ <path d="M7 7h.01M7 18h.01"></path>
+</svg>
+
+{{- else if eq $n "monitor" -}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+ <rect x="3" y="4" width="18" height="12" rx="2" ry="2"></rect>
+ <path d="M8 20h8M12 16v4"></path>
+</svg>
+
+{{- else if eq $n "gamepad" -}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+ <rect x="2" y="8" width="20" height="8" rx="4" ry="4"></rect>
+ <path d="M8 12h-3M6.5 10.5v3"></path>
+ <circle cx="16.5" cy="11" r="1"></circle>
+ <circle cx="18.5" cy="13" r="1"></circle>
+</svg>
+
+{{- else if eq $n "cloud" -}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+ <path d="M20 17.5a4.5 4.5 0 0 0-1.3-8.8A6 6 0 0 0 6 9.5H5a4 4 0 0 0 0 8h12.5A2.5 2.5 0 0 0 20 15"></path>
+</svg>
+
+{{- else if eq $n "database" -}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+ <ellipse cx="12" cy="5" rx="8" ry="3"></ellipse>
+ <path d="M4 5v6c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 11v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"></path>
+</svg>
+
+{{- else if or (eq $n "graduation-cap") (eq $n "education") -}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+ <path d="M22 10L12 5 2 10l10 5 10-5z"></path>
+ <path d="M6 12v5c2 1.5 4 2 6 2s4-.5 6-2v-5"></path>
+</svg>
+
+{{- else if or (eq $n "mail") (eq $n "email") (eq $n "at-symbol") -}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+ <rect x="3" y="5" width="18" height="14" rx="2" ry="2"></rect>
+ <path d="M3 7l9 6 9-6"></path>
+</svg>
+
+{{- else if eq $n "github" -}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+ <path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.5-1.4-1.9-1.4-1.9-1.2-.8.1-.8.1-.8 1.3.1 2 . 1 2.9 1.7 1.2 2 3.1 1.4 3.8 1.1.1-.9.5-1.4.9-1.8-2.7-.3-5.6-1.3-5.6-6a4.7 4.7 0 0 1 1.2-3.3 4.4 4.4 0 0 1 .1-3.3s1-.3 3.4 1.2a11.7 11.7 0 0 1 6.2 0c2.4-1.5 3.4-1.2 3.4-1.2a4.4 4.4 0 0 1 .1 3.3 4.7 4.7 0 0 1 1.2 3.3c0 4.7-2.9 5.7-5.6 6 .5.4 1 . 1 1.2 2v3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/>
+</svg>
+
+{{- else if eq $n "instagram" -}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+ <rect x="3" y="3" width="18" height="18" rx="5" ry="5"></rect>
+ <circle cx="12" cy="12" r="3.5"></circle>
+ <circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"></circle>
+</svg>
+
 {{- else -}}
-
- {{- /* 1) Inline SVG for common names (no asset files needed) */ -}}
-    {{- else if eq $name "server" -}}
-    <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <rect x="3" y="4" width="18" height="6" rx="2" stroke-width="1.5"/>
-    <rect x="3" y="14" width="18" height="6" rx="2" stroke-width="1.5"/>
-    <circle cx="8" cy="7" r="1" fill="currentColor"/>
-    <circle cx="8" cy="17" r="1" fill="currentColor"/>
-    </svg>
-
-    {{- else if eq $name "monitor" -}}
-    <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <rect x="3" y="4" width="18" height="12" rx="2" stroke-width="1.5"/>
-    <path stroke-width="1.5" d="M9 20h6M12 16v4"/>
-    </svg>
-
-    {{- else if eq $name "gamepad" -}}
-    <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <rect x="3" y="9" width="18" height="8" rx="4" stroke-width="1.5"/>
-    <path stroke-width="1.5" d="M8 13h-2m1-1v2"/>
-    <circle cx="16" cy="12.5" r="1" fill="currentColor"/>
-    <circle cx="18" cy="14.5" r="1" fill="currentColor"/>
-    </svg>
-
-    {{- else if eq $name "cloud" -}}
-    <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <path stroke-width="1.5" d="M7 17a4 4 0 1 1 .5-7.96A5 5 0 0 1 18 11a3 3 0 0 1 0 6H7z"/>
-    </svg>
-
-    {{- else if eq $name "database" -}}
-    <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <ellipse cx="12" cy="6" rx="7" ry="3" stroke-width="1.5"/>
-    <path stroke-width="1.5" d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6M5 12v6c0 1.66 3.13 3 7 3s7-1.34 7-3v-6"/>
-    </svg>
-
-    {{- else if eq $name "graduation-cap" -}}
-    <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <path stroke-width="1.5" d="M12 5l9 4-9 4-9-4 9-4z"/>
-    <path stroke-width="1.5" d="M7 13v3.5c0 1.1 2.24 2 5 2s5-.9 5-2V13"/>
-    <path stroke-width="1.5" d="M21 9v5"/>
-    </svg>
-
-
- {{- else if or (eq $name "brands/github") (eq $name "github") -}}
-   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-     <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.61-3.37-1.18-3.37-1.18-.45-1.14-1.1-1.44-1.1-1.44-.9-.62.07-.61.07-.61 1 .07 1.52 1.05 1.52 1.05.89 1.52 2.34 1.08 2.9.83.09-.65.35-1.09.63-1.34-2.22-.26-4.56-1.11-4.56-4.95 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.29.1-2.68 0 0 .84-.27 2.75 1.02A9.57 9.57 0 0 1 12 7.07a9.6 9.6 0 0 1 2.5.34c1.92-1.29 2.75-1.02 2.75-1.02.55 1.39.2 2.43.1 2.68.64.7 1.03 1.59 1.03 2.68 0 3.85-2.34 4.68-4.57 4.94.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/>
-   </svg>
-
- {{- else if or (eq $name "brands/instagram") (eq $name "instagram") -}}
-   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-     <rect x="3" y="3" width="18" height="18" rx="5" stroke-width="1.5"/>
-     <circle cx="12" cy="12" r="4" stroke-width="1.5"/>
-     <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/>
-   </svg>
-
- {{- else if or (eq $name "at-symbol") (eq $name "email") -}}
-   <svg class="{{ $class }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-     <path stroke-width="1.5" d="M12 19a7 7 0 1 1 7-7v2a2 2 0 0 1-4 0v-5M12 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4Z"/>
-   </svg>
-
- {{- else -}}
-   {{- /* 2) 마지막 시도: 로컬 assets에서 찾아보기 (없으면 ⬜ 출력) */ -}}
-   {{- $cands := slice
-       (printf "media/icons/%s.svg" $name)
-       (printf "icons/%s.svg" $name)
-       (printf "media/icons/hero/outline/%s.svg" $name)
-       (printf "media/icons/hero/solid/%s.svg" $name)
-       (printf "media/icons/brands/%s.svg" $name)
-       (printf "icons/hero/outline/%s.svg" $name)
-       (printf "icons/hero/solid/%s.svg" $name)
-       (printf "icons/brands/%s.svg" $name)
-     -}}
-   {{- $.Scratch.Delete "hb_icon_svg" -}}
-   {{- range $cands -}}
-     {{- with resources.Get . -}}
-       {{- $.Scratch.Set "hb_icon_svg" . -}}
-       {{- break -}}
-     {{- end -}}
-   {{- end -}}
-   {{- with $.Scratch.Get "hb_icon_svg" -}}
-     <span class="{{ $class }} inline-block align-middle" aria-hidden="true">
-       {{ .Content | safeHTML }}
-     </span>
-   {{- else -}}
-     <span class="{{ $class }}" aria-hidden="true">⬜</span>
-   {{- end -}}
- {{- end -}}
+{{/* 기본 아이콘 (사각형) */}}
+<svg class="{{ $cls }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+ <rect x="4" y="4" width="16" height="16" rx="3" ry="3"></rect>
+</svg>
 {{- end -}}
