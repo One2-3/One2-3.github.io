@@ -1,66 +1,78 @@
-{{/* 홈의 projects 위젯: 프로젝트 문서에서 직접 카드 생성 (get_featured_image 안 씀) */}}
-{{- $page := .page -}}
-{{- $lang := $page.Lang -}}
-{{- $count := .widget.Params.count | default 9 -}}
+{{/* layouts/partials/widgets/projects.html */}}
+{{- $w := .widget -}}
+{{- $items := $w.Params.content.items | default (slice) -}}
 
-{{/* 현재 언어의 프로젝트 문서 모으기 */}}
-{{- $all := where site.RegularPages "Type" "project" -}}
-{{- $list := where $all "Lang" $lang | first $count -}}
-
-{{ if not (gt (len $list) 0) }}
-  <div class="text-gray-600 dark:text-gray-300 py-8">표시할 프로젝트가 없습니다. (<code>content/{{ $lang }}/project/</code>에 프로젝트 문서를 추가하세요)</div>
-{{ else }}
 <section id="projects" class="container mx-auto px-6 py-10">
-  {{ with .widget.Params.title }}
-    <h2 class="text-2xl md:text-3xl font-bold mb-6">{{ . }}</h2>
+  {{ with $w.Params.content.title }}
+    <h2 class="mb-2 text-3xl font-bold">{{ . }}</h2>
   {{ end }}
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+  {{ with $w.Params.content.text }}
+    <p class="mb-6 text-gray-600 dark:text-gray-300">{{ . }}</p>
+  {{ end }}
 
-    {{ range $p := $list }}
-      {{/* 이미지 안전 처리: .Params.image 가 "문자열"일 때만 사용 */}}
+  <div class="space-y-8">
+    {{- range $items }}
+      {{- $title := .title | default .name | default "프로젝트" -}}
+      {{- $text  := .text  | default .description -}}
+      {{- $href  := .url   | default "" -}}
+      {{- $src   := .image | default "" -}}
+
+      {{/* 이미지 안전 해석기: 순서대로
+           1) 절대/외부 URL
+           2) 이 위젯(.md) 파일이 있는 번들 내부 리소스
+           3) assets/media/ 경로의 파이프라인 리소스
+           4) static/uploads/의 정적 파일
+      */}}
       {{- $img := "" -}}
-      {{- $raw := $p.Params.image -}}
-      {{- if and $raw (eq (printf "%T" $raw) "string") -}}
-        {{- $src := $raw -}}
+      {{- if $src -}}
         {{- if or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "/") -}}
           {{- $img = $src -}}
         {{- else -}}
-          {{- with $p.Resources.GetMatch $src -}}
+          {{- with $.widget.Resources.GetMatch $src -}}
             {{- $img = .RelPermalink -}}
-          {{- else -}}
+          {{- end -}}
+          {{- if eq $img "" -}}
             {{- with resources.Get (printf "media/%s" $src) -}}
               {{- $img = .RelPermalink -}}
-            {{- else -}}
-              {{- $img = (printf "/media/%s" $src) -}}
             {{- end -}}
+          {{- end -}}
+          {{- if and (eq $img "") (fileExists (printf "static/uploads/%s" $src)) -}}
+            {{- $img = printf "/uploads/%s" $src -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
 
-      <article class="group rounded-2xl border border-gray-200/70 dark:border-gray-800/70 overflow-hidden hover:shadow-md transition">
-        <a href="{{ $p.RelPermalink }}" class="block">
+      <article class="grid grid-cols-1 md:grid-cols-12 gap-6 rounded-2xl bg-gray-50/60 dark:bg-gray-800/40 p-4 md:p-6">
+        <!-- 왼쪽 이미지 -->
+        <div class="md:col-span-5 relative group overflow-hidden rounded-xl">
           {{ if $img }}
-            <div class="relative aspect-[16/9] overflow-hidden">
-              <img src="{{ $img }}" alt="{{ $p.Title }}" class="w-full h-full object-cover">
-              <div class="absolute inset-0 opacity-0 group-hover:opacity-10 bg-black transition"></div>
-              {{/* 오버레이 텍스트 (옵션) */}}
-              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                <span class="px-3 py-1 rounded-lg bg-black/50 text-white text-sm">자세히 보기</span>
+            {{ if $href }}<a href="{{ $href }}">{{ end }}
+              <img src="{{ $img }}" alt="{{ $title }}" class="w-full h-60 md:h-56 object-cover">
+              <!-- 호버시 반투명 + 텍스트 -->
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition"></div>
+              <div class="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                <span class="text-white text-sm md:text-base">자세히 보기 →</span>
               </div>
-            </div>
+            {{ if $href }}</a>{{ end }}
           {{ else }}
-            <div class="aspect-[16/9] bg-gray-100 dark:bg-gray-800"></div>
+            <div class="w-full h-60 md:h-56 rounded-xl bg-gray-200/60 dark:bg-gray-700/40"></div>
           {{ end }}
-          <div class="p-4">
-            <h3 class="text-lg font-semibold mb-2">{{ $p.Title }}</h3>
-            {{ with $p.Params.summary }}
-              <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{{ . }}</p>
-            {{ end }}
-          </div>
-        </a>
-      </article>
+        </div>
 
-    {{ end }}
+        <!-- 오른쪽 내용 -->
+        <div class="md:col-span-7 flex flex-col justify-center">
+          <h3 class="text-xl md:text-2xl font-semibold mb-2">{{ $title }}</h3>
+          {{ with $text }}
+            <div class="prose dark:prose-invert max-w-none mb-3">
+              {{ . | markdownify }}
+            </div>
+          {{ end }}
+
+          {{ if $href }}
+            <a href="{{ $href }}" class="text-primary-600 hover:underline mt-1">자세히 보기 →</a>
+          {{ end }}
+        </div>
+      </article>
+    {{- end }}
   </div>
 </section>
-{{ end }}
