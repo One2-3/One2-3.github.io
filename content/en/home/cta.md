@@ -8,7 +8,7 @@ content:
   text: 'Let’s collaborate!'
   button:
     text: 'Get in touch'
-    url: '/ko/contact'
+    url: '/en/contact'
 
 design:
   card:
