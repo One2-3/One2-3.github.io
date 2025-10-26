@@ -1,9 +1,8 @@
-{{/* layouts/partials/home_widgets.html — .Site 컨텍스트에서만 home 찾기 (leaf/section 모두 지원) */}}
+{{/* layouts/partials/home_widgets.html — .Site 한정 + 절대경로만 사용 (모호성 제거), leaf/section 모두 지원 */}}
 
-{{- /* 1) 현재 언어(.Site)에서만 home을 찾는다 */ -}}
-{{- $home := .Site.GetPage "section" "home" -}}
-{{- if not $home -}}{{- $home = .Site.GetPage "/home" -}}{{- end -}}
-{{- if not $home -}}{{- $home = .Site.GetPage "page" "home/index" -}}{{- end -}}
+{{- /* 1) 현재 언어(.Site)에서만 home을 '절대경로'로 찾는다 */ -}}
+{{- $home := .Site.GetPage "/home/index" -}}   {{/* leaf: content/<lang>/home/index.md */}}
+{{- if not $home -}}{{- $home = .Site.GetPage "/home" -}}{{- end -}}  {{/* section: _index.md 또는 leaf 대체 매칭 */}}
 
 {{- if not $home -}}
   <p style="color:#e74c3c; margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
