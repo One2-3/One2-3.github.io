@@ -9,6 +9,7 @@ content:
     - title: "프로젝트1"
       text: ""
       features:
+        - "소개할 프로젝트가 없어 칸만 만들어둠."
         - "소개1"
         - "소개2"
       image: "pro1.jpg"     
