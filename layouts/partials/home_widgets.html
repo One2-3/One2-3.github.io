@@ -1,54 +1,34 @@
 {{/* layouts/partials/home_widgets.html */}}
+{{/* 홈: content/<lang>/home 섹션/페이지 찾기 (다중 폴백) */}}
+{{- $sec := site.GetPage (printf "/%s/home" .Lang) -}}
+{{- if not $sec -}} {{- $sec = site.GetPage "/home" -}} {{- end -}}
+{{- if not $sec -}} {{- $sec = site.GetPage "section" "home" -}} {{- end -}}
+{{- if not $sec -}} {{- $sec = site.GetPage "page" (printf "/%s/home" .Lang) -}} {{- end -}}
+{{- if not $sec -}} {{- $sec = site.GetPage "page" "/home" -}} {{- end -}}
 
-{{- /* 1) 현재 섹션($sec) 안정적으로 얻기 */ -}}
-{{- $sec := . -}}
-{{- if .IsHome -}}
-  {{- /* 홈: content/<lang>/home/index.md (leaf bundle) */ -}}
-  {{- $sec = site.GetPage (printf "/%s/home" .Lang) -}}
+{{- if not $sec -}}
+  <p style="color:#e74c3c; margin: 2rem 0;">위젯 섹션을 찾을 수 없습니다.</p>
 {{- else -}}
-  {{- if eq .Kind "section" -}}
-    {{- $sec = . -}}
-  {{- else -}}
-    {{- $sec = .CurrentSection -}}
+  {{/* 활성화된 위젯만 가중치 순으로 렌더링 */}}
+  {{- $widgets := where $sec.Pages ".Params.active" true -}}
+  {{- range $p := $widgets.ByWeight -}}
+    {{- $name := $p.Params.widget | default ($p.Params.type | default "blank") -}}
+    {{- $partialPath := printf "widgets/%s.html" $name -}}
+    {{- $exists := templates.Exists (printf "partials/%s" $partialPath) -}}
+
+    {{- if $exists -}}
+      {{/* 위젯 파셜에 넘길 컨텍스트 */}}
+      {{- partial $partialPath (dict
+          "page"    $p
+          "section" $sec
+          "root"    .
+          "Site"    site
+        ) -}}
+    {{- else -}}
+      {{/* 위젯 파셜 없을 때 경고 (개발용) */}}
+      <div style="margin:1rem 0;padding:1rem;border:1px dashed #999;border-radius:.5rem;">
+        <strong>Missing widget partial:</strong> <code>{{ $partialPath }}</code>
+      </div>
+    {{- end -}}
   {{- end -}}
 {{- end -}}
-
-<section class="container mx-auto px-6">
-  {{- if not $sec -}}
-    <div class="text-red-600 py-12">위젯 섹션을 찾을 수 없습니다.</div>
-  {{- else -}}
-
-    {{- /* 2) 섹션/번들 유형별로 자식 MD 수집 */ -}}
-    {{- $all := slice -}}
-    {{- if eq $sec.Kind "section" -}}
-      {{- /* 섹션(_index.md) → children은 .Pages */ -}}
-      {{- $all = $sec.Pages -}}
-    {{- else if eq ($sec.BundleType | default "") "branch" -}}
-      {{- /* branch 번들도 .Pages */ -}}
-      {{- $all = $sec.Pages -}}
-    {{- else -}}
-      {{- /* leaf 번들(index.md) → children은 .Resources */ -}}
-      {{- $all = ($sec.Resources.Match "**.md") | default (slice) -}}
-    {{- end -}}
-
-    {{- /* 3) index 제외 + widget 파라미터 있는 파일만 */ -}}
-    {{- $widgets := where (where $all "File.BaseFileName" "!=" "index") "Params.widget" "!=" nil | default (slice) -}}
-
-    {{- if eq (len $widgets) 0 -}}
-      <div class="text-amber-600 py-12">이 섹션에 위젯(.md)이 없습니다.</div>
-    {{- else -}}
-      {{- $sorted := sort $widgets "Params.weight" "asc" -}}
-      {{- range $p := $sorted -}}
-        {{- $w := lower (printf "%v" (index $p.Params "widget")) -}}
-        {{- $wfile := replace $w "." "_" -}}  {{/* about.avatar → about_avatar */}}
-        {{- $partial := printf "widgets/%s.html" $wfile -}}
-        {{- if templates.Exists (printf "partials/%s" $partial) -}}
-          {{ partial $partial (dict "page" . "widget" $p) }}
-        {{- else -}}
-          <div class="py-8 text-amber-600">알 수 없는 위젯: {{ $w }}</div>
-        {{- end -}}
-      {{- end -}}
-    {{- end -}}
-
-  {{- end -}}
-</section>
