@@ -1,10 +1,12 @@
 ---
 # Display name
-title: 박지유
+title: Jiyu Park
+#headless: true 
+avatar: "/media/avatar.png"  
 
 # Full name (for SEO)
-first_name: 박
-last_name: 지유
+first_name: Jiyu
+last_name: Park
 
 # Status emoji
 status:
@@ -14,43 +16,43 @@ status:
 superuser: true
 
 # Role/position/tagline
-role: Professor of Artificial Intelligence
+role: Undergraduate, Dept. of Computer & AI
 
 # Organizations/Affiliations to show in About widget
 organizations:
-  - name: Stanford University
-    url: https://www.stanford.edu/
+  - name: Jeonbuk National University
+    url: 'https://www.jbnu.ac.kr'
+  - name: Department of Computer & Artificial Intelligence
+    url: 'https://csai.jbnu.ac.kr'
 
-# Short bio (displayed in user profile at end of posts)
-bio: My research interests include distributed robotics, mobile computing and programmable matter.
+description: |-
+  - Name : Jiyu Park
+  - Gender : Female
+  - Age : 22 (born in 2004)
+  - University : [Jeonbuk National University](https://www.jbnu.ac.kr)
+  - Major : [Department of Computer & Artificial Intelligence](https://csai.jbnu.ac.kr)
+  - Email : qkrwldb1695@naver.com
+
 
 # Social Networking
 # Need to use another icon? Simply download the SVG icon to your `assets/media/icons/` folder.
-profiles:
-  - icon: at-symbol
-    url: 'mailto:your-email@example.com'
-    label: E-mail Me
-  - icon: brands/x
-    url: https://x.com/BuildLore
-  - icon: brands/instagram
-    url: https://www.instagram.com/
-  - icon: brands/linkedin
-    url: https://www.linkedin.com/
+socials:
+  - type: email
+    url: 'mailto:qkrwldb1695@naver.com'
+    label: Email
+  - type: github
+    url: https://github.com/One2-3
+    label: GitHub
+  - type: instagram
+    url: https://www.instagram.com/j1_yu_u
+    label: Instagram
+
   # Link to a PDF of your resume/CV - upload it to `static/uploads/resume.pdf`
-  - icon: academicons/cv
-    url: uploads/resume.pdf
-    label: Download my resume
-  - icon: rss
-    url: ./post/index.xml
-    label: Subscribe to my blog via RSS feed
-
+#  - type: academicons/cv
+#    url: uploads/resume.pdf
+#    label: Download CV
 # Highlight the author in author lists? (true/false)
-highlight_name: true
-
+#highlight_name: true
 # Author's website URL
-website: ''
+#website: ''
 ---
-
-Chien Shiung Wu is a professor of artificial intelligence at the Stanford AI Lab. Her research interests include
-distributed robotics, mobile computing and programmable matter. She leads the Robotic Neurobiology group, which develops
-self-reconfiguring robots, systems of self-organizing robots, and mobile sensor networks.
