@@ -1,48 +1,48 @@
-{{/* 언어 고정 + 다중 탐색(Section/Leaf/스캔) 안전판 버전 */}}
+{{/* 언어 고정 + Section→Leaf→스캔 3단계 안전판 (leaf 리소스까지 수집) */}}
 
 {{- $ctx  := .ctx | default . -}}
 {{- $site := $ctx.Site -}}
 {{- $lang := $site.Language.Lang -}}
 
 <section id="home-widgets">
-
-  {{/* 0) 후보 초기화 */}}
   {{- $widgets := slice -}}
 
-  {{/* 1) Section 방식: /<lang>/home/_index.md 의 자식 페이지들에서 widget 수집
-        (headless 넣으면 .Pages에서 빠지니 주의) */}}
+  {{/* 1) Section 방식: /<lang>/home/_index.md 자식 페이지에서 widget 수집 */}}
   {{- $sec := $site.GetPage "/home" -}}
   {{- if $sec -}}
+    <!-- DBG: section home found -->
     {{- $secWidgets := where $sec.Pages ".Params.widget" "!=" nil -}}
     {{- $secWidgets = where $secWidgets "Lang" $lang -}}
     {{- $widgets = $secWidgets -}}
   {{- end -}}
 
-  {{/* 2) Leaf 방식: /<lang>/home/index.md 의 리소스(md)에서 widget 수집 */}}
+  {{/* 2) Leaf 방식: /<lang>/home/index.md 리소스(md)에서 widget 수집 */}}
   {{- if not (gt (len $widgets) 0) -}}
     {{- $leaf := $site.GetPage "/home/index" -}}
     {{- if $leaf -}}
-      {{- $res := $leaf.Resources.Match "**.md" -}}
+      <!-- DBG: leaf home found -->
+      {{- $res := $leaf.Resources.ByType "page" -}}
+      {{- if not $res -}}{{- $res = $leaf.Resources.Match "**.md" -}}{{- end -}}
       {{- $res = where $res ".Params.widget" "!=" nil -}}
       {{- $widgets = $res -}}
     {{- end -}}
   {{- end -}}
 
-  {{/* 3) 폴더 스캔 폴백: AllPages 중 Lang=현재언어 & Section=home 만 보기
-        (하위 폴더여도 잡힘, headless는 제외됨) */}}
+  {{/* 3) 폴백: 현재 언어 + Section=home 에 속하는 페이지 중 widget 수집 (하위폴더 포함) */}}
   {{- if not (gt (len $widgets) 0) -}}
+    <!-- DBG: fallback scan -->
     {{- $all := where $site.AllPages "Lang" $lang -}}
     {{- $all = where $all "Section" "home" -}}
     {{- $all = where $all ".Params.widget" "!=" nil -}}
     {{- $widgets = $all -}}
   {{- end -}}
 
-  {{- /* 4) 정렬 + 렌더 */ -}}
   {{- $widgets = sort $widgets "Params.weight" "asc" -}}
 
   {{- if not (gt (len $widgets) 0) -}}
     <p style="color:#e74c3c;margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
   {{- else -}}
+    <!-- DBG: widgets count = {{ len $widgets }} -->
     {{- range $w := $widgets -}}
       {{- $name := lower (printf "%v" (index $w.Params "widget")) -}}
       {{- $partial := printf "widgets/%s.html" (replace $name "." "_") -}}
