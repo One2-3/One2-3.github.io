@@ -3,7 +3,7 @@ title: "Contact"
 type: page        # single page
 layout: contact
 slug: "contact"
-url: "/ko/contact/"
+url: "/en/contact/"
 ---
 
 You can find me at Engineering Building 7, Jeonbuk National University.
