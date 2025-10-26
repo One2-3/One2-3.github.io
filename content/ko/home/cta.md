@@ -8,7 +8,7 @@ content:
   text: '협업을 제안해보세요'
   button:
     text: '제안하기'
-    url: 'ko/contact'
+    url: '/contact'
 
 design:
   card:
