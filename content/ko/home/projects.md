@@ -1,6 +1,6 @@
 ---
 widget: projects_side_cards   # ← 새 위젯 이름
-headless: true
+#headless: true
 weight: 5
 
 content:

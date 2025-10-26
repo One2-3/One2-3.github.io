@@ -1,6 +1,6 @@
 ---
 widget: cta.card
-headless: true
+#headless: true
 weight: 6
 
 content:

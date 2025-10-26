@@ -1,6 +1,6 @@
 ---
 widget: projects_side_cards   # ← New widget name
-headless: true
+#headless: true
 weight: 5
 
 content:

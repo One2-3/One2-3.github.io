@@ -1,9 +1,0 @@
-{{ define "main" }}
-  <article class="prose mx-auto">
-    {{ .Content }}
-    {{ range .Pages.ByWeight }}
-      <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
-      {{ .Summary }}
-    {{ end }}
-  </article>
-{{ end }}

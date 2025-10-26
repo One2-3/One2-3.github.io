@@ -1,0 +1,30 @@
+{{/* tunho 방식: 언어별 섹션(/<lang>/home)에서 widget 자식만 weight 순으로 렌더 */}}
+
+  {{- $lang  := .Site.Language.Lang -}}
+  {{- $home  := site.GetPage "section" (printf "/%s/home" $lang) -}}
+  
+  {{- if not $home -}}
+    <section id="home-widgets">
+      <p style="color:#e74c3c;margin:2rem 0">
+        위젯 섹션(/{{ $lang }}/home/)을 찾을 수 없습니다.
+      </p>
+    </section>
+  {{- else -}}
+    <section id="home-widgets">
+      {{- $widgets := where $home.Pages ".Params.widget" "!=" nil | sort "Params.weight" "asc" -}}
+      {{- if eq (len $widgets) 0 -}}
+        <p style="color:#e74c3c;margin:2rem 0">홈 위젯이 비어 있습니다.</p>
+      {{- else -}}
+        {{- range $w := $widgets -}}
+          {{- $name := lower (printf "%v" (index $w.Params "widget")) -}}
+          {{- $partial := printf "widgets/%s.html" (replace $name "." "_") -}}
+          {{- if templates.Exists (printf "partials/%s" $partial) -}}
+            {{- partial $partial (dict "page" . "widget" $w) -}}
+          {{- else -}}
+            <div class="py-8 text-amber-600">Unknown widget: <code>{{ $name }}</code></div>
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    </section>
+  {{- end -}}
+  

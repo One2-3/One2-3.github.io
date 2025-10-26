@@ -1,6 +1,6 @@
 ---
 widget: features
-headless: true
+#headless: true
 weight: 4
 
 content:

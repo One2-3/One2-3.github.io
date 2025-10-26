@@ -1,0 +1,8 @@
+{{ define "main" }}
+  {{ if .IsHome }}
+    {{ partial "home_widgets_tunho.html" . }}
+    {{ partial "fab.html" . }}
+  {{ else }}
+    {{ .Content }}
+  {{ end }}
+{{ end }}
