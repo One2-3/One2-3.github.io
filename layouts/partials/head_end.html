@@ -1,4 +1,44 @@
-{{- $hover := resources.Get "js/menu-hover-only.js" | resources.Minify | resources.Fingerprint -}}
-<script src="{{ $hover.RelPermalink }}" defer></script>
-<link rel="stylesheet" href="{{ "css/custom.css" | relURL }}">
-
+<!-- layouts/partials/head-end.html -->
+<style>
+    :root{
+      --btn-grad-a: #B9B3FF; /* 연보라 */
+      --btn-grad-b: #8DC2FF; /* 연파랑 */
+      --btn-grad-a-hover: #A99FFF; /* 호버용 연보라(조금 진하게) */
+      --btn-grad-b-hover: #6EB1FF; /* 호버용 연파랑(조금 진하게) */
+      --btn-text: #ffffff;
+    }
+  
+    /* 공통 버튼 스타일 */
+    .btn, a.btn{
+      background: linear-gradient(135deg, var(--btn-grad-a), var(--btn-grad-b)) !important;
+      color: var(--btn-text) !important;
+      border: none !important;
+      transition: background .25s ease, transform .12s ease, box-shadow .25s ease;
+      box-shadow: 0 6px 18px rgba(140, 194, 255, .25);
+    }
+  
+    .btn:hover, a.btn:hover{
+      background: linear-gradient(135deg, var(--btn-grad-a-hover), var(--btn-grad-b-hover)) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(140, 194, 255, .35);
+    }
+  
+    .btn:active, a.btn:active{
+      transform: translateY(0);
+      box-shadow: 0 4px 14px rgba(140, 194, 255, .25);
+    }
+  
+    .btn:focus-visible, a.btn:focus-visible{
+      outline: 3px solid rgba(140, 194, 255, .45);
+      outline-offset: 2px;
+    }
+  
+    /* 테마에서 붙어있는 Tailwind 유틸을 무시시키기 위해… */
+    .btn.bg-primary-600,
+    a.btn.bg-primary-600,
+    .btn.hover\:bg-primary-700:hover,
+    a.btn.hover\:bg-primary-700:hover{
+      background: inherit !important;
+    }
+  </style>
+  
