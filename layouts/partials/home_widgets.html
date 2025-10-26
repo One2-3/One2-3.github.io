@@ -1,34 +1,39 @@
 {{/* layouts/partials/home_widgets.html */}}
-{{/* 홈: content/<lang>/home 섹션/페이지 찾기 (다중 폴백) */}}
-{{- $sec := site.GetPage (printf "/%s/home" .Lang) -}}
-{{- if not $sec -}} {{- $sec = site.GetPage "/home" -}} {{- end -}}
-{{- if not $sec -}} {{- $sec = site.GetPage "section" "home" -}} {{- end -}}
-{{- if not $sec -}} {{- $sec = site.GetPage "page" (printf "/%s/home" .Lang) -}} {{- end -}}
-{{- if not $sec -}} {{- $sec = site.GetPage "page" "/home" -}} {{- end -}}
 
-{{- if not $sec -}}
-  <p style="color:#e74c3c; margin: 2rem 0;">위젯 섹션을 찾을 수 없습니다.</p>
+{{/* 1) 현재 언어의 home을 찾는다 (leaf/branch 모두 지원) */}}
+{{- $home := site.GetPage (printf "/%s/home" .Lang) -}}
+{{- if not $home -}} {{- $home = site.GetPage "/home" -}} {{- end -}}
+
+{{- if not $home -}}
+  <p style="color:#e74c3c; margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
 {{- else -}}
-  {{/* 활성화된 위젯만 가중치 순으로 렌더링 */}}
-  {{- $widgets := where $sec.Pages ".Params.active" true -}}
-  {{- range $p := $widgets.ByWeight -}}
-    {{- $name := $p.Params.widget | default ($p.Params.type | default "blank") -}}
-    {{- $partialPath := printf "widgets/%s.html" $name -}}
-    {{- $exists := templates.Exists (printf "partials/%s" $partialPath) -}}
+<section id="home-widgets">
 
-    {{- if $exists -}}
-      {{/* 위젯 파셜에 넘길 컨텍스트 */}}
-      {{- partial $partialPath (dict
-          "page"    $p
-          "section" $sec
-          "root"    .
-          "Site"    site
-        ) -}}
+  {{/* 2) 위젯 수집: 
+        - branch(_index.md): $home.Pages
+        - leaf(index.md):   $home.Resources.Match "**.md"
+        둘 다에서 front matter의 widget/weight 사용 */}}
+  {{- $widgets := slice -}}
+  {{- if gt (len $home.Pages) 0 -}}
+    {{- $widgets = $home.Pages -}}
+  {{- else -}}
+    {{- $widgets = $home.Resources.Match "**.md" -}}
+  {{- end -}}
+
+  {{/* widget 키 없는 것 제외, weight로 정렬 */}}
+  {{- $widgets = where $widgets ".Params.widget" "!=" nil -}}
+  {{- $widgets = sort $widgets "Params.weight" "asc" -}}
+
+  {{- range $w := $widgets -}}
+    {{- $wname := lower (printf "%v" (index $w.Params "widget")) -}}
+    {{- $wfile := replace $wname "." "_" -}}  {{/* about.avatar → about_avatar */}}
+    {{- $partial := printf "widgets/%s.html" $wfile -}}
+    {{- if templates.Exists (printf "partials/%s" $partial) -}}
+      {{- partial $partial (dict "page" . "widget" $w) -}}
     {{- else -}}
-      {{/* 위젯 파셜 없을 때 경고 (개발용) */}}
-      <div style="margin:1rem 0;padding:1rem;border:1px dashed #999;border-radius:.5rem;">
-        <strong>Missing widget partial:</strong> <code>{{ $partialPath }}</code>
-      </div>
+      <div class="py-8 text-amber-600">알 수 없는 위젯: <code>{{ $wname }}</code></div>
     {{- end -}}
   {{- end -}}
+
+</section>
 {{- end -}}
