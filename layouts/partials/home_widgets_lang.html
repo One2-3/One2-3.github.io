@@ -6,9 +6,11 @@
 
 <section id="home-widgets">
 
+  {{/* 0) 후보 초기화 */}}
   {{- $widgets := slice -}}
 
-  {{/* 1) Section 방식: /<lang>/home/_index.md 자식에서 widget 수집 */}}
+  {{/* 1) Section 방식: /<lang>/home/_index.md 의 자식 페이지들에서 widget 수집
+        (headless 넣으면 .Pages에서 빠지니 주의) */}}
   {{- $sec := $site.GetPage "/home" -}}
   {{- if $sec -}}
     {{- $secWidgets := where $sec.Pages ".Params.widget" "!=" nil -}}
@@ -16,7 +18,7 @@
     {{- $widgets = $secWidgets -}}
   {{- end -}}
 
-  {{/* 2) Leaf 방식: /<lang>/home/index.md 리소스(md)에서 widget 수집 */}}
+  {{/* 2) Leaf 방식: /<lang>/home/index.md 의 리소스(md)에서 widget 수집 */}}
   {{- if not (gt (len $widgets) 0) -}}
     {{- $leaf := $site.GetPage "/home/index" -}}
     {{- if $leaf -}}
@@ -26,7 +28,8 @@
     {{- end -}}
   {{- end -}}
 
-  {{/* 3) 폴더 스캔 폴백: AllPages 중 현재 언어 + Section=home 에서 widget 수집 */}}
+  {{/* 3) 폴더 스캔 폴백: AllPages 중 Lang=현재언어 & Section=home 만 보기
+        (하위 폴더여도 잡힘, headless는 제외됨) */}}
   {{- if not (gt (len $widgets) 0) -}}
     {{- $all := where $site.AllPages "Lang" $lang -}}
     {{- $all = where $all "Section" "home" -}}
@@ -34,6 +37,7 @@
     {{- $widgets = $all -}}
   {{- end -}}
 
+  {{- /* 4) 정렬 + 렌더 */ -}}
   {{- $widgets = sort $widgets "Params.weight" "asc" -}}
 
   {{- if not (gt (len $widgets) 0) -}}
