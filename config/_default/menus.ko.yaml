@@ -11,9 +11,6 @@ main:
     weight: 15
     hasChildren: true
   - parent: 소개
-    name: 자기소개 요약
-    url: /ko/#profile_intro
-  - parent: 소개
     name: 자기소개
     url: /ko/about/
   
@@ -24,9 +21,6 @@ main:
   - name: 프로젝트
     weight: 30
     hasChildren: true
-  - parent: 프로젝트
-    name: 프로젝트 소개
-    url: /ko/#projects
   - parent: 프로젝트
     name: 프로젝트1
     url: /ko/project/p1/
