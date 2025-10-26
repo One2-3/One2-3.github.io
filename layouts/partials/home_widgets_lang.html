@@ -1,36 +1,50 @@
-{{/* home_widgets_lang.html — 언어별 .Site만 사용, 경로 기반, leaf/section 모두 지원 */}}
+{{/* home_widgets_lang.html — 언어별 .Site만 사용, 경로 기반 + 폴더 스캔 폴백(leaf/section/틀린구조까지 커버) */}}
 
-{{- $ctx := .ctx -}}
+{{- $ctx := .ctx | default . -}}
+{{- $site := $ctx.Site -}}
+{{- $lang := $site.Language.Lang -}}
 
-{{/* 1) 현재 언어(.Site)에서 home을 '경로'로만 찾는다: leaf(index) → section */}}
-{{- $home := or ($ctx.Site.GetPage "/home/index") ($ctx.Site.GetPage "/home") -}}
+<!-- DEBUG: lang={{ $lang }} -->
 
-{{- if not $home -}}
+{{/* 1) 현재 언어(.Site) 기준으로 home을 '경로'로만 시도: leaf(index) → section */}}
+{{- $home := or ($site.GetPage "/home/index") ($site.GetPage "/home") -}}
+
+{{- $widgets := slice -}}
+
+{{- if $home -}}
+  <!-- DEBUG: found home via GetPage; kind={{ $home.Kind }} -->
+  {{- if eq $home.Kind "section" -}}
+    {{- $widgets = $home.Pages -}}
+  {{- else -}}
+    {{- $widgets = $home.Resources.ByType "page" -}}
+    {{- if not $widgets -}}{{- $widgets = $home.Resources.Match "**.md" -}}{{- end -}}
+  {{- end -}}
+{{- else -}}
+  <!-- DEBUG: fallback scan -->
+  {{- /* 2) 폴백: File이 있는 페이지 중 현재 언어의 home 디렉터리만 스캔 */ -}}
+  {{- $allWithFile := where $site.AllPages "File" "!=" nil -}}
+  {{- $dir := printf "%s/home/" $lang -}}
+  {{- $widgets = where $allWithFile "File.Dir" $dir -}}
+{{- end -}}
+
+{{- /* 3) widget 있는 항목만 weight 순 정렬 */ -}}
+{{- $widgets = where $widgets ".Params.widget" "!=" nil -}}
+{{- $widgets = sort  $widgets "Params.weight" "asc" -}}
+
+{{- if not (gt (len $widgets) 0) -}}
   <p style="color:#e74c3c; margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
 {{- else -}}
 <section id="home-widgets">
-
-  {{/* 2) leaf면 .Resources, section이면 .Pages */}}
-  {{- $widgets := cond (eq $home.Kind "section") $home.Pages ($home.Resources.ByType "page") -}}
-  {{- if not $widgets -}}{{- $widgets = $home.Resources.Match "**.md" -}}{{- end -}}
-
-  {{/* 3) widget 지정된 것만 weight 오름차순 */}}
-  {{- $widgets = where $widgets ".Params.widget" "!=" nil -}}
-  {{- $widgets = sort  $widgets "Params.weight" "asc" -}}
-
-  {{- if not (gt (len $widgets) 0) -}}
-    <p style="color:#e74c3c; margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
-  {{- else -}}
-    {{- range $w := $widgets -}}
-      {{- $name := lower (printf "%v" (index $w.Params "widget")) -}}
-      {{- $partial := printf "widgets/%s.html" (replace $name "." "_") -}}
-      {{- if templates.Exists (printf "partials/%s" $partial) -}}
-        {{- partial $partial (dict "page" $ctx "widget" $w) -}}
-      {{- else -}}
-        <div class="py-8 text-amber-600">Missing widget: <code>{{ $name }}</code></div>
-      {{- end -}}
+  {{- range $w := $widgets -}}
+    {{- $name := lower (printf "%v" (index $w.Params "widget")) -}}
+    {{- $partial := printf "widgets/%s.html" (replace $name "." "_") -}}
+    {{- if templates.Exists (printf "partials/%s" $partial) -}}
+      {{- partial $partial (dict "page" $ctx "widget" $w) -}}
+    {{- else -}}
+      <div class="py-8 text-amber-600">
+        Unknown widget: <code>{{ $name }}</code>
+      </div>
     {{- end -}}
   {{- end -}}
-
 </section>
 {{- end -}}
