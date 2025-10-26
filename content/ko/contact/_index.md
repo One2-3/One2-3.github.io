@@ -1,7 +1,7 @@
 ---
 title: "Contact"
 type: page        # 일반 단일 페이지
-layout: single
+layout: contact
 slug: "contact"
 url: "/ko/contact/"
 ---
