@@ -1,4 +1,4 @@
-# 지유 박 — 포트폴리오 (README)
+# 박지유 — 포트폴리오 (README)
 
 박지유의 개인 포트폴리오 사이트입니다.  
 공개 URL 경로는 그대로 **`/ko/`** 아래에 두었고, 위젯 기반 레이아웃(front matter의 `widget:`, `headless:`, `weight:` 등)을 사용합니다.  

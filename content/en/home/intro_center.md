@@ -7,8 +7,8 @@ design:
 content:
   title: "Hello 👋"           
   text: |             
-    My goal is to become a **backend developer** who keeps learning and building.  
+    My goal is to become a **fullstack developer** who keeps learning and building.  
     I document my growth through practice and projects.
 
-    [Learn more →](/ko/about/)
+    [Learn more →](/en/about/)
 ---
