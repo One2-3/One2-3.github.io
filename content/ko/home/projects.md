@@ -19,13 +19,13 @@ content:
       bullets:
         - "요약 1"
         - "요약 2"
-      image: "/assets/media/pro2.jpg"
+      image: "/media/pro2.jpg"
       url: "/ko/project/p2/"
     - title: "프로젝트 3"
       summary: "간단 설명 한 줄…"
       bullets:
         - "포인트 1"
         - "포인트 2"
-      image: "pro3.jpg"
+      image: "/media/pro3.jpg"
       url: "/ko/project/p3/"
 ---
