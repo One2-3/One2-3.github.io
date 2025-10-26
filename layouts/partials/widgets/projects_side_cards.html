@@ -1,51 +1,50 @@
-{{/* projects_side_cards: 좌측 이미지, 우측 텍스트. 이미지 클릭 시 상세로 이동. */}}
-{{- $w := .widget -}}
-{{- $p := $w.Params.content -}}
-{{- $items := $p.items | default (slice) -}}
+{{/* Projects – side cards (image left, text right) */}}
+<section id="projects" class="container mx-auto px-6">
+  <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">프로젝트</h2>
+  <p class="text-gray-400 mb-8">수행한 프로젝트들입니다.</p>
 
-<section class="container mx-auto px-6 py-12">
-  {{ with $p.title }}<h2 class="text-2xl md:text-3xl font-bold mb-2">{{ . }}</h2>{{ end }}
-  {{ with $p.text }}<p class="text-gray-600 dark:text-gray-300 mb-6">{{ . }}</p>{{ end }}
+  <div class="space-y-10">
+    {{ range .widget.Params.items }}
+      <article class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+        <!-- 이미지 영역 -->
+        <div class="md:col-span-6">
+          <div class="relative group rounded-xl overflow-hidden">
+            {{ $img := .image | default "media/placeholder.jpg" }}
+            <img src="{{ $img | relURL }}"
+                 alt="{{ .title }}"
+                 class="w-full h-60 md:h-72 object-cover select-none">
 
-  <div class="space-y-8">
-    {{ range $it := $items }}
-      {{- $imgURL := "" -}}
-      {{- with $it.image -}}
-        {{- $res := $w.Resources.GetMatch . -}}
-        {{- if not $res }}{{ $res = resources.Get (printf "media/%s" .) }}{{ end }}
-        {{- if $res }}{{ $imgURL = $res.RelPermalink }}{{ else }}{{ $imgURL = . }}{{ end }}
-      {{- end -}}
+            <!-- 이미지를 전체 클릭 가능하게 -->
+            <a href="{{ .url | relURL }}" class="absolute inset-0 z-20" aria-label="{{ .title }}"></a>
 
-      <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch rounded-2xl ring-1 ring-gray-300/40 dark:ring-gray-700/40 overflow-hidden">
-        <!-- 이미지(좌) -->
-        <a href="{{ $it.url }}" class="relative md:col-span-2 group block">
-          <div class="relative h-56 md:h-full">
-            {{ if $imgURL }}
-              <img src="{{ $imgURL }}" alt="{{ $it.title }}" class="absolute inset-0 w-full h-full object-cover">
-            {{ else }}
-              <div class="absolute inset-0 w-full h-full bg-gray-200 dark:bg-gray-700"></div>
-            {{ end }}
-            <!-- 호버 오버레이 + '자세히 보기' -->
+            <!-- 호버 때만 살짝 어두워지는 레이어 -->
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition"></div>
-            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-              <span class="px-4 py-2 rounded-full bg-white/90 text-gray-900 text-sm font-semibold shadow">
+
+            <!-- 호버 시 나타나는 '자세히 보기' 텍스트 (버튼 아님) -->
+            <div class="pointer-events-none absolute inset-0 flex items-center justify-center
+                        opacity-0 group-hover:opacity-100 transition">
+              <span class="text-white text-lg md:text-xl font-semibold underline decoration-2">
                 자세히 보기
               </span>
             </div>
           </div>
-        </a>
-
-        <!-- 텍스트(우) -->
-        <div class="md:col-span-3 p-5 md:p-6 flex flex-col justify-center">
-          <h3 class="text-xl md:text-2xl font-semibold mb-2">{{ $it.title }}</h3>
-          {{ with $it.summary }}<p class="text-gray-600 dark:text-gray-300 mb-3">{{ . }}</p>{{ end }}
-          {{ with $it.bullets }}
-            <ul class="list-disc pl-5 space-y-1 text-gray-700 dark:text-gray-200">
-              {{ range . }}<li>{{ . }}</li>{{ end }}
-            </ul>
-          {{ end }}
         </div>
-      </div>
+
+        <!-- 텍스트 영역 -->
+        <div class="md:col-span-6 flex">
+          <div class="rounded-xl bg-zinc-900/40 dark:bg-zinc-800/40 border border-zinc-700/40 w-full p-6">
+            <h3 class="text-2xl md:text-3xl font-extrabold tracking-tight mb-3">{{ .title }}</h3>
+            {{ with .summary }}
+              <p class="text-gray-300 mb-3">{{ . }}</p>
+            {{ end }}
+            {{ with .bullets }}
+              <ul class="list-disc pl-5 space-y-1 text-gray-300">
+                {{ range . }}<li>{{ . }}</li>{{ end }}
+              </ul>
+            {{ end }}
+          </div>
+        </div>
+      </article>
     {{ end }}
   </div>
 </section>
