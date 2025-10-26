@@ -1,0 +1,66 @@
+{{/* 홈의 projects 위젯: 프로젝트 문서에서 직접 카드 생성 (get_featured_image 안 씀) */}}
+{{- $page := .page -}}
+{{- $lang := $page.Lang -}}
+{{- $count := .widget.Params.count | default 9 -}}
+
+{{/* 현재 언어의 프로젝트 문서 모으기 */}}
+{{- $all := where site.RegularPages "Type" "project" -}}
+{{- $list := where $all "Lang" $lang | first $count -}}
+
+{{ if not (gt (len $list) 0) }}
+  <div class="text-gray-600 dark:text-gray-300 py-8">표시할 프로젝트가 없습니다. (<code>content/{{ $lang }}/project/</code>에 프로젝트 문서를 추가하세요)</div>
+{{ else }}
+<section id="projects" class="container mx-auto px-6 py-10">
+  {{ with .widget.Params.title }}
+    <h2 class="text-2xl md:text-3xl font-bold mb-6">{{ . }}</h2>
+  {{ end }}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+    {{ range $p := $list }}
+      {{/* 이미지 안전 처리: .Params.image 가 "문자열"일 때만 사용 */}}
+      {{- $img := "" -}}
+      {{- $raw := $p.Params.image -}}
+      {{- if and $raw (eq (printf "%T" $raw) "string") -}}
+        {{- $src := $raw -}}
+        {{- if or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "/") -}}
+          {{- $img = $src -}}
+        {{- else -}}
+          {{- with $p.Resources.GetMatch $src -}}
+            {{- $img = .RelPermalink -}}
+          {{- else -}}
+            {{- with resources.Get (printf "media/%s" $src) -}}
+              {{- $img = .RelPermalink -}}
+            {{- else -}}
+              {{- $img = (printf "/media/%s" $src) -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+
+      <article class="group rounded-2xl border border-gray-200/70 dark:border-gray-800/70 overflow-hidden hover:shadow-md transition">
+        <a href="{{ $p.RelPermalink }}" class="block">
+          {{ if $img }}
+            <div class="relative aspect-[16/9] overflow-hidden">
+              <img src="{{ $img }}" alt="{{ $p.Title }}" class="w-full h-full object-cover">
+              <div class="absolute inset-0 opacity-0 group-hover:opacity-10 bg-black transition"></div>
+              {{/* 오버레이 텍스트 (옵션) */}}
+              <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+                <span class="px-3 py-1 rounded-lg bg-black/50 text-white text-sm">자세히 보기</span>
+              </div>
+            </div>
+          {{ else }}
+            <div class="aspect-[16/9] bg-gray-100 dark:bg-gray-800"></div>
+          {{ end }}
+          <div class="p-4">
+            <h3 class="text-lg font-semibold mb-2">{{ $p.Title }}</h3>
+            {{ with $p.Params.summary }}
+              <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{{ . }}</p>
+            {{ end }}
+          </div>
+        </a>
+      </article>
+
+    {{ end }}
+  </div>
+</section>
+{{ end }}
