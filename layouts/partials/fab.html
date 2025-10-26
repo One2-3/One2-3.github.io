@@ -2,12 +2,12 @@
 
     {{/* 버튼 목록 정의: href, 라벨(접근성), 아이콘 이름 */}}
     {{- $buttons := slice
-        (dict "href" "mailto:qkrwldb1695@naver.com" "label" "메일"     "icon" "mail")
+        (dict "href" "mailto:qkrwldb1695@naver.com" "label" "mail"     "icon" "mail")
         (dict "href" "https://github.com/one2-3"     "label" "GitHub"   "icon" "github")
         (dict "href" "https://www.instagram.com/j1_yu_u" "label" "Instagram" "icon" "instagram")
-        (dict "href" "/uploads/resume.pdf"           "label" "이력서"   "icon" "download")
-        (dict "href" "/ko/about/"                    "label" "소개"     "icon" "user")
-        (dict "href" "/ko/project/"                  "label" "프로젝트" "icon" "folder")
+        (dict "href" "/uploads/resume.pdf"           "label" "resume"   "icon" "download")
+        (dict "href" "/ko/about/"                    "label" "about"     "icon" "user")
+        (dict "href" "/ko/project/"                  "label" "project" "icon" "folder")
     -}}
   
     {{- range $btn := $buttons }}
