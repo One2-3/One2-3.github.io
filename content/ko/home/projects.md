@@ -1,5 +1,6 @@
 ---
 widget: cta_image_paragraph   # 또는 cta-image-paragraph (로더에서 -→_ 처리하면 어느 쪽이든 OK)
+id: projects
 headless: false               # ← 페이지에 표시하려면 false
 weight: 5
 

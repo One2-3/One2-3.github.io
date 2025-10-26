@@ -1,5 +1,6 @@
 ---
 widget: about.avatar_intro
+id: profile_intro
 headless: true
 weight: 2
 content:
