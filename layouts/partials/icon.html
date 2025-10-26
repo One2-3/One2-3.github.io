@@ -1,43 +1,40 @@
-{{- $name := .name | default "" -}}
+{{- /* inputs */ -}}
+{{- $name  := .name  | default "" -}}
 {{- $class := .class | default "h-6 w-6" -}}
 
 {{- if not $name -}}
   <span class="{{ $class }}" aria-hidden="true">⬜</span>
 {{- else -}}
-  {{- $svg := nil -}}
+  {{- /* 후보 경로 만들기 */ -}}
   {{- $cands := slice -}}
-
-  {{- /* 후보 경로 만들기 (문자열 연산만, 주석은 라인 중간에만 둠) */ -}}
-  {{- if or (strings.Contains $name "/") (strings.HasSuffix $name ".svg") -}}
-    {{- $clean := strings.TrimSuffix $name ".svg" -}}
+  {{- if or (hasSuffix $name ".svg") (in $name "/") -}}
+    {{- $clean := replace $name ".svg" "" -}}
     {{- $cands = $cands | append (printf "media/icons/%s.svg" $clean) -}}
     {{- $cands = $cands | append (printf "icons/%s.svg" $clean) -}}
   {{- else -}}
     {{- $cands = $cands | append (printf "media/icons/hero/outline/%s.svg" $name) -}}
-    {{- $cands = $cands | append (printf "media/icons/hero/solid/%s.svg" $name) -}}
-    {{- $cands = $cands | append (printf "media/icons/brands/%s.svg" $name) -}}
-    {{- $cands = $cands | append (printf "media/icons/academicons/%s.svg" $name) -}}
-    {{- $cands = $cands | append (printf "icons/hero/outline/%s.svg" $name) -}}
-    {{- $cands = $cands | append (printf "icons/hero/solid/%s.svg" $name) -}}
-    {{- $cands = $cands | append (printf "icons/brands/%s.svg" $name) -}}
-    {{- $cands = $cands | append (printf "icons/academicons/%s.svg" $name) -}}
+    {{- $cands = $cands | append (printf "media/icons/hero/solid/%s.svg"   $name) -}}
+    {{- $cands = $cands | append (printf "media/icons/brands/%s.svg"       $name) -}}
+    {{- $cands = $cands | append (printf "media/icons/academicons/%s.svg"  $name) -}}
+    {{- $cands = $cands | append (printf "icons/hero/outline/%s.svg"       $name) -}}
+    {{- $cands = $cands | append (printf "icons/hero/solid/%s.svg"         $name) -}}
+    {{- $cands = $cands | append (printf "icons/brands/%s.svg"             $name) -}}
+    {{- $cands = $cands | append (printf "icons/academicons/%s.svg"        $name) -}}
   {{- end -}}
 
+  {{- /* 첫 번째로 존재하는 리소스를 찾기 (Scratch 사용) */ -}}
+  {{- $.Scratch.Delete "hb_icon_svg" -}}
   {{- range $cands -}}
-    {{- if not $svg -}}
-      {{- $hit := resources.Get . -}}
-      {{- if $hit -}}{{- $svg = $hit -}}{{- end -}}
+    {{- with resources.Get . -}}
+      {{- $.Scratch.Set "hb_icon_svg" . -}}
+      {{- break -}}
     {{- end -}}
   {{- end -}}
 
-  {{- if not $svg -}}
-    {{- $hits := resources.Match (printf "media/icons/**/%s.svg" $name) -}}
-    {{- if not $hits -}}{{- $hits = resources.Match (printf "icons/**/%s.svg" $name) -}}{{- end -}}
-    {{- if $hits -}}{{- $svg = index $hits 0 -}}{{- end -}}
-  {{- end -}}
-
-  {{- if $svg -}}
-    <span class="{{ $class }} inline-block align-middle" aria-hidden="true">{{ $svg.Content | safeHTML }}</span>
+  {{- with $.Scratch.Get "hb_icon_svg" -}}
+    <span class="{{ $class }} inline-block align-middle" aria-hidden="true">
+      {{ .Content | safeHTML }}
+    </span>
   {{- else -}}
     <span class="{{ $class }}" aria-hidden="true">⬜</span>
   {{- end -}}
