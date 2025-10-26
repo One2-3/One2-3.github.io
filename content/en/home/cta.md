@@ -1,6 +1,6 @@
 ---
 widget: cta.card
-#headless: true
+headless: true
 weight: 6
 
 content:
@@ -8,7 +8,7 @@ content:
   text: 'Let’s collaborate!'
   button:
     text: 'Get in touch'
-    url: '/en/contact'
+    url: '/ko/contact'
 
 design:
   card:
