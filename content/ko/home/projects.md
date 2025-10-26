@@ -2,12 +2,12 @@
 widget: projects_side_cards   # ← 새 위젯 이름
 id: projects
 headless: true
-weight: 30
+weight: 5
 id: projects
 
 content:
   title: "프로젝트"
-  text: "최근 작업입니다."
+  text: "수행한 프로젝트들입니다."
   items:
     - title: "프로젝트 1"
       summary: "소개할만한 프로젝트가 없어 칸만 만들어둠"

@@ -1,2 +1,36 @@
-{{/* safe stub: never returns a resource, never outputs nil */}}
-{{- return "" -}}
+{{- /* Safe featured image resolver. Prints a URL or empty string. */ -}}
+{{- $p := . -}}
+{{- $out := "" -}}
+
+{{/* 1 front matter 에 image 가 있는 경우 (string 또는 map 모두 허용) */}}
+{{- with $p.Params.image -}}
+  {{- $src := . -}}
+  {{- if reflect.IsMap $src -}}
+    {{- $src = or (index $src "filename") (index $src "file") (index $src "src") "" -}}
+  {{- end -}}
+  {{- if $src -}}
+    {{- if or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "/") -}}
+      {{- $out = $src -}}
+    {{- else -}}
+      {{- with $p.Resources.GetMatch $src -}}
+        {{- $out = .RelPermalink -}}
+      {{- else -}}
+        {{- with resources.Get (printf "media/%s" $src) -}}
+          {{- $out = .RelPermalink -}}
+        {{- else -}}
+          {{- $out = (printf "/media/%s" $src) -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* 2 없으면 번들 내 첫 이미지 리소스 사용 */}}
+{{- if and (eq $out "") ($p.Resources) -}}
+  {{- with ($p.Resources.ByType "image" | first) -}}
+    {{- $out = .RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* 출력(문자열) */ -}}
+{{- $out -}}
