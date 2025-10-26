@@ -1,3 +1,8 @@
 {{ define "main" }}
-  {{ partial "home_widgets.html" . }}
+  {{ if .IsHome }}
+    {{ partial "home_widgets.html" . }}
+  {{ else }}
+    {{/* 리스트 타입의 본문/컨텐츠만 렌더 */}}
+    {{ .Content }}
+  {{ end }}
 {{ end }}
