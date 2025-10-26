@@ -1,18 +1,24 @@
-{{/* layouts/partials/home_widgets.html — 언어 지정 + 타입 지정으로 모호성 제거, leaf/section 모두 지원 */}}
+{{/* layouts/partials/home_widgets.html — 언어 경로 고정, 리프/섹션 모두 지원 (untyped GetPage 우선) */}}
 
 {{- $lang := .Lang -}}
 
-{{/* 1) 현재 언어 경로로만 home 찾기 (타입을 명시하여 모호성 제거) */}}
-{{- $home := site.GetPage "page"    (printf "/%s/home/index" $lang) -}}  {{/* leaf: index.md */}}
-{{- if not $home -}} {{- $home = site.GetPage "page"    (printf "/%s/home"       $lang) -}} {{- end -}}
-{{- if not $home -}} {{- $home = site.GetPage "section" (printf "/%s/home"       $lang) -}} {{- end -}}
+{{/* 1) 현재 언어의 home 후보 경로를 순서대로 시도 (모두 '언어 prefix' 사용) */}}
+{{- $candidates := slice
+    (printf "/%s/home"       $lang)   /* leaf/section 모두 대응 */
+    (printf "/%s/home/index" $lang)   /* leaf index.md 명시 */
+-}}
+{{- $home := nil -}}
+{{- range $c := $candidates -}}
+  {{- if not $home -}}
+    {{- $home = site.GetPage $c -}}
+  {{- end -}}
+{{- end -}}
 
 {{- if not $home -}}
   <p style="color:#e74c3c; margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
 {{- else -}}
 <section id="home-widgets">
-
-  {{/* 2) 위젯 수집: 섹션이면 .Pages, 리프면 .Resources */}}
+  {{/* 2) 위젯 수집: 섹션이면 .Pages, 리프(index.md)면 .Resources */}}
   {{- $widgets := slice -}}
   {{- if eq $home.Kind "section" -}}
     {{- $widgets = $home.Pages -}}
@@ -21,7 +27,7 @@
     {{- if not $widgets -}} {{- $widgets = $home.Resources.Match "**.md" -}} {{- end -}}
   {{- end -}}
 
-  {{/* widget 지정된 항목만 weight 순으로 렌더 */}}
+  {{/* widget 지정된 것만 weight 오름차순 렌더 */}}
   {{- $widgets = where $widgets ".Params.widget" "!=" nil -}}
   {{- $widgets = sort  $widgets "Params.weight" "asc" -}}
 
@@ -35,6 +41,5 @@
       <div class="py-8 text-amber-600">알 수 없는 위젯: <code>{{ $wname }}</code></div>
     {{- end -}}
   {{- end -}}
-
 </section>
 {{- end -}}
