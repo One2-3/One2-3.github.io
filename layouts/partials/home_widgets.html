@@ -1,31 +1,24 @@
-{{/* layouts/partials/home_widgets.html — 다국어 안전판 (모든 경로 폴백), leaf/section 모두 지원 */}}
+{{/* layouts/partials/home_widgets.html — 다국어 안전판 (재대입/타입지정/모호호출 없음) */}}
 
 {{- $lang := .Lang -}}
-{{- $home := nil -}}
 
-{{/* A. 현재 언어(.Site) 컨텍스트에서 우선 시도 */}}
-{{- if not $home -}}{{- $home = .Site.GetPage "/home" -}}{{- end -}}
-{{- if not $home -}}{{- $home = .Site.GetPage "/home/index" -}}{{- end -}}
-
-{{/* B. 그래도 못 찾으면 전역 site에 언어 prefix 붙여서 재시도 */}}
-{{- if not $home -}}{{- $home = site.GetPage (printf "/%s/home" $lang) -}}{{- end -}}
-{{- if not $home -}}{{- $home = site.GetPage (printf "/%s/home/index" $lang) -}}{{- end -}}
+{{/* 1) home 페이지를 확정: 현재 언어 컨텍스트(.Site) → 전역 site + 언어 prefix 순서로 OR 체인 */}}
+{{- $home := or
+    (.Site.GetPage "/home")
+    (.Site.GetPage "/home/index")
+    (site.GetPage (printf "/%s/home" $lang))
+    (site.GetPage (printf "/%s/home/index" $lang))
+-}}
 
 {{- if not $home -}}
   <p style="color:#e74c3c; margin:2rem 0">위젯 섹션을 찾을 수 없습니다.</p>
 {{- else -}}
 <section id="home-widgets">
+  {{/* 2) 위젯 수집: 섹션이면 .Pages, 리프면 .Resources */}}
+  {{- $widgets := cond (eq $home.Kind "section") $home.Pages ($home.Resources.ByType "page") -}}
+  {{- if not $widgets -}}{{- $widgets = $home.Resources.Match "**.md" -}}{{- end -}}
 
-  {{/* C. 위젯 수집: 섹션이면 .Pages, 리프(index.md)면 .Resources */}}
-  {{- $widgets := slice -}}
-  {{- if eq $home.Kind "section" -}}
-    {{- $widgets = $home.Pages -}}
-  {{- else -}}
-    {{- $widgets = $home.Resources.ByType "page" -}}
-    {{- if not $widgets -}}{{- $widgets = $home.Resources.Match "**.md" -}}{{- end -}}
-  {{- end -}}
-
-  {{/* D. widget 지정된 항목만 weight 오름차순 렌더 */}}
+  {{/* widget 지정된 항목만 weight 오름차순 렌더 */}}
   {{- $widgets = where $widgets ".Params.widget" "!=" nil -}}
   {{- $widgets = sort  $widgets "Params.weight" "asc" -}}
 
